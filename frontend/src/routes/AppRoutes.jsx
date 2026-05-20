@@ -1,14 +1,47 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Home from "../pages/Home/Home";
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+} from "react-router-dom"
+
+import Home from "../pages/Home/Home"
+import Login from "../pages/Login/Login"
+import Signup from "../pages/Signup/Signup"
+
 
 function AppRoutes() {
+
   return (
+
     <BrowserRouter>
+
       <Routes>
-        <Route path="/" element={<Home />} />
+
+        {/* HOME */}
+
+        <Route
+          path="/"
+          element={<Home />}
+        />
+
+        {/* LOGIN */}
+
+        <Route
+          path="/login"
+          element={<Login />}
+        />
+
+        {/* SIGNUP */}
+
+        <Route
+          path="/signup"
+          element={<Signup />}
+        />
       </Routes>
+      
     </BrowserRouter>
-  );
+
+  )
 }
 
-export default AppRoutes;
+export default AppRoutes
