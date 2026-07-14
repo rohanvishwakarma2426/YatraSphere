@@ -4,63 +4,62 @@ import {
   FaCalculator,
   FaUsers,
   FaSuitcase,
+  FaShieldAlt,
+  FaRoute,
+  FaBookOpen,
+  FaTags,
 } from "react-icons/fa"
+
+const menuItems = [
+  { label: "Home", icon: FaHome, active: true },
+  { label: "Explore Places", icon: FaMapMarkedAlt },
+  { label: "Budget Calculator", icon: FaCalculator },
+  { label: "Scam Alerts", icon: FaShieldAlt },
+  { label: "Trip Planner", icon: FaRoute, badge: "NEW" },
+  { label: "Community", icon: FaUsers },
+  { label: "Blogs & Guides", icon: FaBookOpen },
+  { label: "Packages", icon: FaSuitcase },
+  { label: "Offers & Deals", icon: FaTags },
+]
 
 function Sidebar() {
 
   return (
 
-    <div className="w-[260px] min-h-screen px-5 py-5">
+    <div className="w-[260px] shrink-0 min-h-screen px-5 py-5">
 
       {/* MENU */}
 
       <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#ececec]">
 
-        <div className="space-y-2">
+        <div className="space-y-1">
 
-          {/* ACTIVE */}
+          {menuItems.map(({ label, icon: Icon, active, badge }) => (
 
-          <div className="flex items-center gap-4 bg-[#edf3ff] text-[#2563eb] px-4 py-4 rounded-2xl cursor-pointer font-semibold">
+            <div
+              key={label}
+              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl cursor-pointer transition ${
+                active
+                  ? "bg-[#edf3ff] text-[#2563eb] font-semibold"
+                  : "text-[#4b5563] hover:bg-[#f7f8fb]"
+              }`}
+            >
 
-            <FaHome className="text-[18px]" />
+              <Icon className="text-[18px] shrink-0" />
 
-            Home
+              <span className="text-[15px]">
+                {label}
+              </span>
 
-          </div>
+              {badge && (
+                <span className="ml-auto bg-[#ef4444] text-white text-[10px] font-bold px-2 py-1 rounded-full">
+                  {badge}
+                </span>
+              )}
 
-          {/* MENU */}
+            </div>
 
-          <div className="flex items-center gap-4 text-[#4b5563] px-4 py-4 rounded-2xl hover:bg-[#f7f8fb] cursor-pointer transition">
-
-            <FaMapMarkedAlt className="text-[18px]" />
-
-            Explore Places
-
-          </div>
-
-          <div className="flex items-center gap-4 text-[#4b5563] px-4 py-4 rounded-2xl hover:bg-[#f7f8fb] cursor-pointer transition">
-
-            <FaCalculator className="text-[18px]" />
-
-            Budget Calculator
-
-          </div>
-
-          <div className="flex items-center gap-4 text-[#4b5563] px-4 py-4 rounded-2xl hover:bg-[#f7f8fb] cursor-pointer transition">
-
-            <FaUsers className="text-[18px]" />
-
-            Community
-
-          </div>
-
-          <div className="flex items-center gap-4 text-[#4b5563] px-4 py-4 rounded-2xl hover:bg-[#f7f8fb] cursor-pointer transition">
-
-            <FaSuitcase className="text-[18px]" />
-
-            Packages
-
-          </div>
+          ))}
 
         </div>
 
