@@ -22,28 +22,28 @@ function TopCategories() {
 
     <div>
 
-      <h2 className="text-[22px] font-bold text-[#111827] mb-4">
+      <h2 className="text-[18px] font-bold text-[#111827] mb-3">
         Top Categories
       </h2>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
 
         {categories.map(({ icon: Icon, title, count, bg, color }) => (
 
           <div
             key={title}
-            className="bg-white rounded-2xl border border-[#ececec] shadow-sm p-4 flex items-center gap-3 cursor-pointer hover:shadow-md transition"
+            className="bg-white rounded-xl border border-[#ececec] shadow-sm p-3 flex items-center gap-2.5 cursor-pointer hover:shadow-md transition"
           >
 
-            <div className={`w-[40px] h-[40px] shrink-0 rounded-xl flex items-center justify-center ${bg}`}>
-              <Icon className={`text-[16px] ${color}`} />
+            <div className={`w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
+              <Icon className={`text-[14px] ${color}`} />
             </div>
 
             <div className="min-w-0">
-              <h3 className="text-[14px] font-semibold text-[#111827] truncate">
+              <h3 className="text-[12.5px] font-semibold text-[#111827] truncate">
                 {title}
               </h3>
-              <p className="text-[12px] text-[#6b7280]">
+              <p className="text-[11px] text-[#6b7280]">
                 {count}
               </p>
             </div>

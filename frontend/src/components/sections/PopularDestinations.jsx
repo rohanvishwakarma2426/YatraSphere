@@ -55,20 +55,20 @@ function PopularDestinations() {
 
   const scroll = (dir) => {
     if (!scrollRef.current) return
-    scrollRef.current.scrollBy({ left: dir * 320, behavior: "smooth" })
+    scrollRef.current.scrollBy({ left: dir * 210, behavior: "smooth" })
   }
 
   return (
 
     <div>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
 
-        <h2 className="text-[22px] font-bold text-[#111827]">
+        <h2 className="text-[18px] font-bold text-[#111827]">
           Popular Destinations 🔥
         </h2>
 
-        <span className="text-[#2563eb] text-[14px] font-semibold cursor-pointer">
+        <span className="text-[#2563eb] text-[13px] font-semibold cursor-pointer">
           View All
         </span>
 
@@ -78,14 +78,14 @@ function PopularDestinations() {
 
         <div
           ref={scrollRef}
-          className="flex gap-5 overflow-x-auto scroll-smooth pb-2 [&::-webkit-scrollbar]:hidden"
+          className="flex gap-4 overflow-x-auto scroll-smooth pb-2 [&::-webkit-scrollbar]:hidden"
         >
 
           {destinations.map((d) => (
 
             <div
               key={d.name}
-              className="relative shrink-0 w-[240px] h-[280px] rounded-3xl overflow-hidden cursor-pointer group"
+              className="relative shrink-0 w-[190px] h-[220px] rounded-2xl overflow-hidden cursor-pointer group"
             >
 
               <img
@@ -97,22 +97,22 @@ function PopularDestinations() {
               <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent" />
 
               <span
-                className={`absolute top-4 left-4 ${d.tagColor} text-white text-[11px] font-semibold px-3 py-1.5 rounded-full`}
+                className={`absolute top-3 left-3 ${d.tagColor} text-white text-[10px] font-semibold px-2.5 py-1 rounded-full`}
               >
                 {d.tag}
               </span>
 
-              <div className="absolute bottom-4 left-4 right-4 text-white">
+              <div className="absolute bottom-3 left-3 right-3 text-white">
 
-                <h3 className="text-[20px] font-bold">
+                <h3 className="text-[16px] font-bold">
                   {d.name}
                 </h3>
 
-                <p className="text-[13px] text-white/85 mt-0.5">
+                <p className="text-[11px] text-white/85 mt-0.5">
                   {d.region}
                 </p>
 
-                <div className="flex items-center gap-1 mt-2 text-[13px]">
+                <div className="flex items-center gap-1 mt-1.5 text-[11px]">
                   <FaStar className="text-yellow-400" />
                   <span>{d.rating}</span>
                 </div>
@@ -129,16 +129,16 @@ function PopularDestinations() {
 
         <button
           onClick={() => scroll(-1)}
-          className="hidden md:flex absolute -left-4 top-1/2 -translate-y-1/2 w-[36px] h-[36px] bg-white rounded-full shadow-md items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb]"
+          className="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 w-[32px] h-[32px] bg-white rounded-full shadow-md items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb]"
         >
-          <FaChevronLeft className="text-[13px]" />
+          <FaChevronLeft className="text-[12px]" />
         </button>
 
         <button
           onClick={() => scroll(1)}
-          className="absolute -right-4 top-1/2 -translate-y-1/2 w-[36px] h-[36px] bg-white rounded-full shadow-md flex items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb]"
+          className="absolute -right-3 top-1/2 -translate-y-1/2 w-[32px] h-[32px] bg-white rounded-full shadow-md flex items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb]"
         >
-          <FaChevronRight className="text-[13px]" />
+          <FaChevronRight className="text-[12px]" />
         </button>
 
       </div>

@@ -58,36 +58,36 @@ function QuickActions() {
 
     <div>
 
-      <div className="flex items-center justify-between mb-4">
+      <div className="flex items-center justify-between mb-3">
 
-        <h2 className="text-[22px] font-bold text-[#111827]">
+        <h2 className="text-[18px] font-bold text-[#111827]">
           What would you like to do?
         </h2>
 
-        <span className="text-[#2563eb] text-[14px] font-semibold cursor-pointer">
+        <span className="text-[#2563eb] text-[13px] font-semibold cursor-pointer">
           See All
         </span>
 
       </div>
 
-      <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-4">
+      <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
 
         {actions.map(({ icon: Icon, title, desc, bg, color }) => (
 
           <div
             key={title}
-            className="bg-white rounded-2xl border border-[#ececec] shadow-sm p-5 cursor-pointer hover:shadow-md transition"
+            className="bg-white rounded-xl border border-[#ececec] shadow-sm p-3.5 cursor-pointer hover:shadow-md transition"
           >
 
-            <div className={`w-[44px] h-[44px] rounded-xl flex items-center justify-center ${bg}`}>
-              <Icon className={`text-[18px] ${color}`} />
+            <div className={`w-[36px] h-[36px] rounded-lg flex items-center justify-center ${bg}`}>
+              <Icon className={`text-[15px] ${color}`} />
             </div>
 
-            <h3 className="mt-4 text-[15px] font-semibold text-[#111827]">
+            <h3 className="mt-3 text-[13px] font-semibold text-[#111827]">
               {title}
             </h3>
 
-            <p className="mt-1 text-[13px] text-[#6b7280] leading-5">
+            <p className="mt-0.5 text-[11px] text-[#6b7280] leading-4">
               {desc}
             </p>
 

@@ -10,23 +10,23 @@ function RightSidebar() {
 
   return (
 
-    <div className="w-full xl:w-[340px] xl:shrink-0 flex flex-col gap-5">
+    <div className="w-full xl:w-[300px] xl:shrink-0 flex flex-col gap-4">
 
       {/* BUDGET CALCULATOR */}
 
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#ececec]">
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
 
-          <div className="w-[38px] h-[38px] rounded-xl bg-[#eaf1ff] flex items-center justify-center shrink-0">
-            <FaCalculator className="text-[#2563eb] text-[16px]" />
+          <div className="w-[32px] h-[32px] rounded-lg bg-[#eaf1ff] flex items-center justify-center shrink-0">
+            <FaCalculator className="text-[#2563eb] text-[14px]" />
           </div>
 
           <div>
-            <h2 className="text-[17px] font-bold text-[#111827]">
+            <h2 className="text-[14.5px] font-bold text-[#111827]">
               Budget Calculator
             </h2>
-            <p className="text-[12px] text-[#6b7280]">
+            <p className="text-[11px] text-[#6b7280]">
               Plan your trip smartly with real estimated budget.
             </p>
           </div>
@@ -35,21 +35,21 @@ function RightSidebar() {
 
         {/* FORM */}
 
-        <div className="mt-6 space-y-4">
+        <div className="mt-4 space-y-3">
 
-          <select className="w-full h-[50px] border border-[#ececec] rounded-2xl px-4 outline-none text-[14px]">
+          <select className="w-full h-[42px] border border-[#ececec] rounded-xl px-3.5 outline-none text-[12.5px]">
             <option>Manali, Himachal Pradesh</option>
           </select>
 
-          <select className="w-full h-[50px] border border-[#ececec] rounded-2xl px-4 outline-none text-[14px]">
+          <select className="w-full h-[42px] border border-[#ececec] rounded-xl px-3.5 outline-none text-[12.5px]">
             <option>3 Days</option>
           </select>
 
-          <select className="w-full h-[50px] border border-[#ececec] rounded-2xl px-4 outline-none text-[14px]">
+          <select className="w-full h-[42px] border border-[#ececec] rounded-xl px-3.5 outline-none text-[12.5px]">
             <option>Budget Travel</option>
           </select>
 
-          <button className="w-full h-[52px] bg-[#2563eb] text-white rounded-2xl text-[15px] font-semibold hover:bg-[#1d4ed8] transition">
+          <button className="w-full h-[44px] bg-[#2563eb] text-white rounded-xl text-[13px] font-semibold hover:bg-[#1d4ed8] transition">
             Calculate My Budget
           </button>
 
@@ -57,17 +57,17 @@ function RightSidebar() {
 
         {/* RESULT */}
 
-        <div className="mt-5 bg-[#f5fbf7] rounded-2xl p-5 border border-[#d8f5df]">
+        <div className="mt-4 bg-[#f5fbf7] rounded-xl p-4 border border-[#d8f5df]">
 
-          <p className="text-[#6b7280] text-[13px]">
+          <p className="text-[#6b7280] text-[11.5px]">
             Estimated Budget
           </p>
 
-          <h1 className="text-[#16a34a] text-[28px] font-bold mt-1">
+          <h1 className="text-[#16a34a] text-[22px] font-bold mt-1">
             ₹4,250 - ₹5,700
           </h1>
 
-          <p className="text-[#16a34a] mt-1 text-[13px] font-medium">
+          <p className="text-[#16a34a] mt-1 text-[11.5px] font-medium">
             (Per Person)
           </p>
 
@@ -77,45 +77,45 @@ function RightSidebar() {
 
       {/* SCAM ALERTS */}
 
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#ececec]">
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
 
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[16px] font-bold text-[#111827]">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[14px] font-bold text-[#111827]">
             Scam Alerts
           </h2>
-          <span className="text-[#2563eb] text-[13px] font-semibold cursor-pointer">
+          <span className="text-[#2563eb] text-[12px] font-semibold cursor-pointer">
             View All
           </span>
         </div>
 
-        <div className="space-y-4">
+        <div className="space-y-3">
 
           {scamAlerts.map((alert) => (
 
-            <div key={alert.title} className="flex items-start gap-3">
+            <div key={alert.title} className="flex items-start gap-2.5">
 
-              <div className="w-[34px] h-[34px] shrink-0 rounded-xl bg-[#fdeaea] flex items-center justify-center">
-                <FaExclamationTriangle className="text-[#dc2626] text-[13px]" />
+              <div className="w-[28px] h-[28px] shrink-0 rounded-lg bg-[#fdeaea] flex items-center justify-center">
+                <FaExclamationTriangle className="text-[#dc2626] text-[11px]" />
               </div>
 
               <div className="min-w-0 flex-1">
 
                 <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-[13px] font-semibold text-[#111827] truncate">
+                  <h3 className="text-[12px] font-semibold text-[#111827] truncate">
                     {alert.title}
                   </h3>
                   {alert.isNew ? (
-                    <span className="shrink-0 bg-[#fdeaea] text-[#dc2626] text-[10px] font-bold px-2 py-0.5 rounded-full">
+                    <span className="shrink-0 bg-[#fdeaea] text-[#dc2626] text-[9px] font-bold px-1.5 py-0.5 rounded-full">
                       New
                     </span>
                   ) : (
-                    <span className="shrink-0 text-[11px] text-[#9ca3af]">
+                    <span className="shrink-0 text-[10px] text-[#9ca3af]">
                       {alert.time}
                     </span>
                   )}
                 </div>
 
-                <p className="text-[12px] text-[#6b7280] mt-0.5 truncate">
+                <p className="text-[11px] text-[#6b7280] mt-0.5 truncate">
                   {alert.desc}
                 </p>
 
@@ -131,55 +131,55 @@ function RightSidebar() {
 
       {/* COMMUNITY */}
 
-      <div className="bg-white rounded-3xl p-6 shadow-sm border border-[#ececec]">
+      <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
 
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-[16px] font-bold text-[#111827]">
+        <div className="flex items-center justify-between mb-3">
+          <h2 className="text-[14px] font-bold text-[#111827]">
             From the Community
           </h2>
-          <span className="text-[#2563eb] text-[13px] font-semibold cursor-pointer">
+          <span className="text-[#2563eb] text-[12px] font-semibold cursor-pointer">
             View All
           </span>
         </div>
 
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2.5">
 
           <img
             src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop"
             alt="Rohit Backpacker"
-            className="w-[38px] h-[38px] rounded-full object-cover"
+            className="w-[32px] h-[32px] rounded-full object-cover"
           />
 
           <div>
-            <h3 className="text-[13px] font-semibold text-[#111827]">
+            <h3 className="text-[12px] font-semibold text-[#111827]">
               Rohit Backpacker
             </h3>
-            <p className="text-[11px] text-[#9ca3af]">
+            <p className="text-[10px] text-[#9ca3af]">
               Manali Trip · 2h ago
             </p>
           </div>
 
         </div>
 
-        <p className="mt-3 text-[13px] text-[#374151] leading-5">
+        <p className="mt-2.5 text-[12px] text-[#374151] leading-4.5">
           Just completed the Manali trip in ₹3500. Here's my 3 day complete budget breakdown...
         </p>
 
-        <div className="mt-3 grid grid-cols-3 gap-2">
+        <div className="mt-2.5 grid grid-cols-3 gap-1.5">
 
           <img
             src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=200&auto=format&fit=crop"
             alt="trip photo"
-            className="w-full h-[64px] object-cover rounded-xl"
+            className="w-full h-[52px] object-cover rounded-lg"
           />
 
           <img
             src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=200&auto=format&fit=crop"
             alt="trip photo"
-            className="w-full h-[64px] object-cover rounded-xl"
+            className="w-full h-[52px] object-cover rounded-lg"
           />
 
-          <div className="relative w-full h-[64px] rounded-xl overflow-hidden">
+          <div className="relative w-full h-[52px] rounded-lg overflow-hidden">
 
             <img
               src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=200&auto=format&fit=crop"
@@ -187,7 +187,7 @@ function RightSidebar() {
               className="w-full h-full object-cover"
             />
 
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[12px] font-semibold cursor-pointer">
+            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-semibold cursor-pointer">
               Read More
             </div>
 
@@ -195,18 +195,18 @@ function RightSidebar() {
 
         </div>
 
-        <div className="mt-4 flex items-center gap-5 text-[#6b7280] text-[13px]">
+        <div className="mt-3 flex items-center gap-4 text-[#6b7280] text-[12px]">
 
-          <span className="flex items-center gap-1.5 cursor-pointer hover:text-[#dc2626]">
-            <FaHeart className="text-[13px]" /> 128
+          <span className="flex items-center gap-1 cursor-pointer hover:text-[#dc2626]">
+            <FaHeart className="text-[12px]" /> 128
           </span>
 
-          <span className="flex items-center gap-1.5 cursor-pointer hover:text-[#2563eb]">
-            <FaRegComment className="text-[13px]" /> 32
+          <span className="flex items-center gap-1 cursor-pointer hover:text-[#2563eb]">
+            <FaRegComment className="text-[12px]" /> 32
           </span>
 
-          <span className="flex items-center gap-1.5 cursor-pointer hover:text-[#2563eb]">
-            <FaShare className="text-[13px]" /> 15
+          <span className="flex items-center gap-1 cursor-pointer hover:text-[#2563eb]">
+            <FaShare className="text-[12px]" /> 15
           </span>
 
         </div>

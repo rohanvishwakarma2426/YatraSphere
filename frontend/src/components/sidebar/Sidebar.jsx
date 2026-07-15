@@ -1,3 +1,5 @@
+import { Link, useLocation } from "react-router-dom"
+
 import {
   FaHome,
   FaMapMarkedAlt,
@@ -11,12 +13,12 @@ import {
 } from "react-icons/fa"
 
 const menuItems = [
-  { label: "Home", icon: FaHome, active: true },
+  { label: "Home", icon: FaHome, path: "/" },
   { label: "Explore Places", icon: FaMapMarkedAlt },
   { label: "Budget Calculator", icon: FaCalculator },
-  { label: "Scam Alerts", icon: FaShieldAlt },
-  { label: "Trip Planner", icon: FaRoute, badge: "NEW" },
-  { label: "Community", icon: FaUsers },
+  { label: "Scam Alerts", icon: FaShieldAlt, path: "/alerts" },
+  { label: "Trip Planner", icon: FaRoute, badge: "NEW", path: "/trips" },
+  { label: "Community", icon: FaUsers, path: "/community" },
   { label: "Blogs & Guides", icon: FaBookOpen },
   { label: "Packages", icon: FaSuitcase },
   { label: "Offers & Deals", icon: FaTags },
@@ -24,42 +26,55 @@ const menuItems = [
 
 function Sidebar() {
 
+  const { pathname } = useLocation()
+
   return (
 
-    <div className="w-[260px] shrink-0 min-h-screen px-5 py-5">
+    <div className="w-[220px] shrink-0 min-h-screen px-4 py-4">
 
       {/* MENU */}
 
-      <div className="bg-white rounded-3xl p-5 shadow-sm border border-[#ececec]">
+      <div className="bg-white rounded-2xl p-3.5 shadow-sm border border-[#ececec]">
 
-        <div className="space-y-1">
+        <div className="space-y-0.5">
 
-          {menuItems.map(({ label, icon: Icon, active, badge }) => (
+          {menuItems.map(({ label, icon: Icon, badge, path }) => {
 
-            <div
-              key={label}
-              className={`flex items-center gap-4 px-4 py-3.5 rounded-2xl cursor-pointer transition ${
-                active
-                  ? "bg-[#edf3ff] text-[#2563eb] font-semibold"
-                  : "text-[#4b5563] hover:bg-[#f7f8fb]"
-              }`}
-            >
+            const active = path ? pathname === path : false
 
-              <Icon className="text-[18px] shrink-0" />
+            const content = (
+              <>
+                <Icon className="text-[15px] shrink-0" />
 
-              <span className="text-[15px]">
-                {label}
-              </span>
-
-              {badge && (
-                <span className="ml-auto bg-[#ef4444] text-white text-[10px] font-bold px-2 py-1 rounded-full">
-                  {badge}
+                <span className="text-[13px]">
+                  {label}
                 </span>
-              )}
 
-            </div>
+                {badge && (
+                  <span className="ml-auto bg-[#ef4444] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                    {badge}
+                  </span>
+                )}
+              </>
+            )
 
-          ))}
+            const className = `flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition ${
+              active
+                ? "bg-[#edf3ff] text-[#2563eb] font-semibold"
+                : "text-[#4b5563] hover:bg-[#f7f8fb]"
+            }`
+
+            return path ? (
+              <Link key={label} to={path} className={className}>
+                {content}
+              </Link>
+            ) : (
+              <div key={label} className={className}>
+                {content}
+              </div>
+            )
+
+          })}
 
         </div>
 
@@ -67,13 +82,13 @@ function Sidebar() {
 
       {/* PREMIUM CARD */}
 
-      <div className="mt-5 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] rounded-3xl p-6 text-white">
+      <div className="mt-4 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] rounded-2xl p-5 text-white">
 
-        <h2 className="text-[22px] font-bold">
+        <h2 className="text-[17px] font-bold">
           Go Premium
         </h2>
 
-        <p className="mt-3 text-[14px] leading-6 text-white/80">
+        <p className="mt-2 text-[12px] leading-5 text-white/80">
 
           Unlock exclusive itineraries,
           AI planner, hidden gems
@@ -81,7 +96,7 @@ function Sidebar() {
 
         </p>
 
-        <button className="mt-6 w-full h-[50px] bg-white text-[#2563eb] rounded-2xl font-semibold hover:scale-[1.02] transition">
+        <button className="mt-4 w-full h-[40px] bg-white text-[#2563eb] rounded-xl text-[13px] font-semibold hover:scale-[1.02] transition">
 
           Upgrade Now
 
@@ -91,31 +106,31 @@ function Sidebar() {
 
       {/* APP CARD */}
 
-      <div className="mt-5 bg-[#111827] rounded-3xl p-6 text-white">
+      <div className="mt-4 bg-[#111827] rounded-2xl p-5 text-white">
 
-        <h2 className="text-[22px] font-bold leading-9">
+        <h2 className="text-[17px] font-bold leading-6">
 
           Take YatraSphere
           Wherever You Go!
 
         </h2>
 
-        <p className="mt-3 text-[14px] text-gray-300 leading-6">
+        <p className="mt-2 text-[12px] text-gray-300 leading-5">
 
           Download our app for the
           best travel experience.
 
         </p>
 
-        <div className="mt-6 space-y-3">
+        <div className="mt-4 space-y-2">
 
-          <button className="w-full h-[50px] bg-white/10 rounded-2xl">
+          <button className="w-full h-[40px] bg-white/10 rounded-xl text-[13px]">
 
             Google Play
 
           </button>
 
-          <button className="w-full h-[50px] bg-white/10 rounded-2xl">
+          <button className="w-full h-[40px] bg-white/10 rounded-xl text-[13px]">
 
             App Store
 

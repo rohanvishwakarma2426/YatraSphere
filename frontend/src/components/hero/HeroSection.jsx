@@ -5,7 +5,7 @@ function HeroSection() {
   return (
 
     <div
-      className="w-full min-h-[420px] rounded-[32px] overflow-hidden relative bg-cover bg-center"
+      className="w-full min-h-[320px] rounded-[24px] overflow-hidden relative bg-cover bg-center"
       style={{
         backgroundImage: `url(${heroBg})`
       }}
@@ -17,15 +17,15 @@ function HeroSection() {
 
         {/* CONTENT */}
 
-        <div className="p-10 md:p-14">
+        <div className="p-6 md:p-8">
 
-          <h1 className="text-white text-[38px] md:text-[52px] leading-[1.15] font-bold max-w-[700px]">
+          <h1 className="text-white text-[26px] md:text-[36px] leading-[1.15] font-bold max-w-[560px]">
 
             Explore. Plan. Travel Better.
 
           </h1>
 
-          <p className="text-white/90 text-[18px] md:text-[22px] mt-4">
+          <p className="text-white/90 text-[14px] md:text-[16px] mt-2.5">
 
             Real travelers. Real experiences. Real help.
 
@@ -33,25 +33,25 @@ function HeroSection() {
 
           {/* SEARCH BOX */}
 
-          <div className="mt-8 w-full max-w-[640px] bg-white rounded-[28px] p-6">
+          <div className="mt-5 w-full max-w-[520px] bg-white rounded-[20px] p-4">
 
             {/* TABS */}
 
-            <div className="flex items-center gap-2">
+            <div className="flex items-center gap-1.5">
 
-              <button className="bg-[#edf3ff] text-[#2563eb] px-5 h-[44px] rounded-2xl font-semibold text-[15px]">
+              <button className="bg-[#edf3ff] text-[#2563eb] px-4 h-[34px] rounded-xl font-semibold text-[13px]">
 
                 Destinations
 
               </button>
 
-              <button className="text-[#4b5563] px-5 h-[44px] rounded-2xl font-medium hover:bg-[#f5f7fb] text-[15px]">
+              <button className="text-[#4b5563] px-4 h-[34px] rounded-xl font-medium hover:bg-[#f5f7fb] text-[13px]">
 
                 Experiences
 
               </button>
 
-              <button className="text-[#4b5563] px-5 h-[44px] rounded-2xl font-medium hover:bg-[#f5f7fb] text-[15px]">
+              <button className="text-[#4b5563] px-4 h-[34px] rounded-xl font-medium hover:bg-[#f5f7fb] text-[13px]">
 
                 Guides
 
@@ -61,15 +61,15 @@ function HeroSection() {
 
             {/* INPUT */}
 
-            <div className="mt-4 flex items-center gap-3">
+            <div className="mt-3 flex items-center gap-2">
 
               <input
                 type="text"
                 placeholder="Where do you want to go?"
-                className="flex-1 h-[52px] border border-[#ececec] rounded-2xl px-5 outline-none text-[15px] min-w-0"
+                className="flex-1 h-[40px] border border-[#ececec] rounded-xl px-4 outline-none text-[13px] min-w-0"
               />
 
-              <button className="w-[120px] shrink-0 h-[52px] bg-[#2563eb] text-white rounded-2xl text-[16px] font-semibold hover:bg-[#1d4ed8] transition">
+              <button className="w-[92px] shrink-0 h-[40px] bg-[#2563eb] text-white rounded-xl text-[13px] font-semibold hover:bg-[#1d4ed8] transition">
 
                 Search
 

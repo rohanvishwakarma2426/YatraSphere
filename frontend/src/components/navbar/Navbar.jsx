@@ -1,3 +1,5 @@
+import { Link, useLocation } from "react-router-dom"
+
 import {
   HiOutlineMap,
 } from "react-icons/hi"
@@ -25,85 +27,76 @@ import {
 import logo from "../../assets/navbar/logo1.png"
 import profile from "../../assets/navbar/profile.png"
 
+const NAV_ITEMS = [
+  { label: "Explore", icon: HiOutlineMap, path: "/" },
+  { label: "Community", icon: FiUsers, path: "/community" },
+  { label: "Trips", icon: RiRoadMapLine, path: "/trips" },
+  { label: "Alerts", icon: FaBell, path: "/alerts" },
+  { label: "Packages", icon: BsBag, path: null },
+]
+
 function Navbar() {
+
+  const { pathname } = useLocation()
 
   return (
 
     <div className="w-full px-1 pt-1">
 
-      <div className="w-full h-[60px] bg-white border border-[#ececec] rounded-[18px] shadow-sm flex items-center px-0">
+      <div className="w-full h-[54px] bg-white border border-[#ececec] rounded-[16px] shadow-sm flex items-center px-0">
 
         {/* LOGO */}
 
         <img
           src={logo}
           alt="logo"
-          className="w-[120px] h-[80] p-30 object-contain shrink-0"
+          className="w-[100px] h-[70] p-30 object-contain shrink-0"
         />
         {/* SEARCH */}
-        <div className="ml-10 w-[250px] h-[40px] bg-[#d6d9e0] border border-[#edf0f5] rounded-[14px] px-8 flex items-center shrink-0">
+        <div className="ml-6 w-[220px] h-[36px] bg-[#d6d9e0] border border-[#edf0f5] rounded-[12px] px-6 flex items-center shrink-0">
 
           <input
             type="text"
             placeholder="Search places, experiences..."
-            className="bg-transparent outline-none w-full text-[15px] text-[#6b7280]"
+            className="bg-transparent outline-none w-full text-[13px] text-[#6b7280]"
           />
 
         </div>
 
         {/* MENU */}
 
-        <div className="flex items-center gap-5 ml-12 flex-1">
+        <div className="flex items-center gap-4 ml-8 flex-1">
 
-          <div className="flex items-center gap-2 text-[#2563eb] cursor-pointer whitespace-nowrap">
+          {NAV_ITEMS.map(({ label, icon: Icon, path }) => {
 
-            <HiOutlineMap className="text-[21px]" />
+            const active = path ? pathname === path : false
 
-            <span className="text-[16px] font-semibold">
-              Explore
-            </span>
+            const className = `flex items-center gap-1.5 cursor-pointer whitespace-nowrap transition ${
+              active
+                ? "text-[#2563eb] font-semibold"
+                : "text-[#4b5563] hover:text-[#2563eb]"
+            }`
 
-          </div>
+            const content = (
+              <>
+                <Icon className="text-[17px]" />
+                <span className="text-[14px]">
+                  {label}
+                </span>
+              </>
+            )
 
-          <div className="flex items-center gap-2 text-[#4b5563] cursor-pointer whitespace-nowrap">
+            return path ? (
+              <Link key={label} to={path} className={className}>
+                {content}
+              </Link>
+            ) : (
+              <div key={label} className={className}>
+                {content}
+              </div>
+            )
 
-            <FiUsers className="text-[20px]" />
-
-            <span className="text-[16px]">
-              Community
-            </span>
-
-          </div>
-
-          <div className="flex items-center gap-2 text-[#4b5563] cursor-pointer whitespace-nowrap">
-
-            <RiRoadMapLine className="text-[20px]" />
-
-            <span className="text-[16px]">
-              Trips
-            </span>
-
-          </div>
-
-          <div className="flex items-center gap-2 text-[#4b5563] cursor-pointer whitespace-nowrap">
-
-            <FaBell className="text-[18px]" />
-
-            <span className="text-[16px]">
-              Alerts
-            </span>
-
-          </div>
-
-          <div className="flex items-center gap-2 text-[#4b5563] cursor-pointer whitespace-nowrap">
-
-            <BsBag className="text-[18px]" />
-
-            <span className="text-[16px]">
-              Packages
-            </span>
-
-          </div>
+          })}
 
         </div>
 
@@ -113,9 +106,9 @@ function Navbar() {
 
           {/* BUTTON */}
 
-          <button className="bg-[#2563eb] hover:bg-[#1d4ed8] transition text-white h-[35px] px-6 rounded-[10px] flex items-center gap-1 text-[15px] font-medium whitespace-nowrap">
+          <button className="bg-[#2563eb] hover:bg-[#1d4ed8] transition text-white h-[32px] px-5 rounded-[9px] flex items-center gap-1 text-[13px] font-medium whitespace-nowrap">
 
-            <AiOutlinePlus className="text-[18px]" />
+            <AiOutlinePlus className="text-[15px]" />
 
             Share Experience
 
@@ -125,9 +118,9 @@ function Navbar() {
 
           <div className="relative cursor-pointer shrink-0">
 
-            <FaBell className="text-[21px] text-[#4b5563]" />
+            <FaBell className="text-[18px] text-[#4b5563]" />
 
-            <div className="absolute -top-2 -right-2 w-[20px] h-[20px] bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-bold">
+            <div className="absolute -top-1.5 -right-1.5 w-[16px] h-[16px] bg-red-500 rounded-full flex items-center justify-center text-white text-[9px] font-bold">
 
               3
 
@@ -140,7 +133,7 @@ function Navbar() {
           <img
             src={profile}
             alt="profile"
-            className="w-[42px] h-[42px] rounded-full object-cover cursor-pointer shrink-0"
+            className="w-[36px] h-[36px] rounded-full object-cover cursor-pointer shrink-0"
           />
 
         </div>
