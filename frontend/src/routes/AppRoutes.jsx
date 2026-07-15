@@ -15,7 +15,7 @@ import BudgetCalculator from "../pages/BudgetCalculator/BudgetCalculator"
 import OffersDeals from "../pages/OffersDeals/OffersDeals"
 import ShareExperience from "../pages/ShareExperience/ShareExperience"
 import BlogsGuides from "../pages/BlogsGuides/BlogsGuides"
-
+import Explore from "../pages/Explore/Explore"
 
 function AppRoutes() {
 
@@ -100,6 +100,12 @@ function AppRoutes() {
         <Route
           path="/blogs-guides"
           element={<BlogsGuides />}
+        />
+        {/* EXPLORE PLACES */}
+
+        <Route
+          path="/explore"
+          element={<Explore />}
         />
 
       </Routes>

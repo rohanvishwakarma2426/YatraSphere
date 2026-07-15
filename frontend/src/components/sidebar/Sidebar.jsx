@@ -15,7 +15,7 @@ import {
 
 const menuItems = [
   { label: "Home", icon: FaHome, path: "/" },
-  { label: "Explore Places", icon: FaMapMarkedAlt },
+  { label: "Explore Places", icon: FaMapMarkedAlt, path: "/explore" },
   { label: "Budget Calculator", icon: FaCalculator, path: "/budget-calculator" },
   { label: "Scam Alerts", icon: FaShieldAlt, path: "/alerts" },
   { label: "Trip Planner", icon: FaRoute, badge: "NEW", path: "/trips" },

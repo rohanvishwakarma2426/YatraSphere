@@ -1,7 +1,7 @@
 import { useMemo, useState } from "react"
 
 import Navbar from "../../components/navbar/Navbar"
-import PackagesFilterSidebar from "../../components/packages/PackagesFilterSidebar"
+import Sidebar from "../../components/sidebar/Sidebar"
 import PackagesRightSidebar from "../../components/packages/PackagesRightSidebar"
 import PackagesHero from "../../components/packages/PackagesHero"
 import CategoryTabs from "../../components/packages/CategoryTabs"
@@ -22,14 +22,7 @@ const DEFAULT_FILTERS = {
 
 function Packages() {
 
-  // Single shared filters object. Every control (search box, category tabs,
-  // sort dropdown, sidebar filters) updates this same state via setFilters,
-  // and the grid below just re-derives from it with filterAndSortPackages().
-  // "Apply Filters" / "Clear All" are just convenience buttons that mutate
-  // the same state (kept for UX parity with the design — result updates live).
   const [filters, setFilters] = useState(DEFAULT_FILTERS)
-
-  const handleClear = () => setFilters(DEFAULT_FILTERS)
 
   const visiblePackages = useMemo(
     () => filterAndSortPackages(PACKAGES, filters),
@@ -44,14 +37,9 @@ function Packages() {
 
       <div className="flex">
 
-        {/* LEFT: FILTERS (replaces the usual nav Sidebar on this page) */}
+        {/* NORMAL NAV SIDEBAR (same as every other page) */}
 
-        <PackagesFilterSidebar
-          filters={filters}
-          setFilters={setFilters}
-          onApply={() => {}}
-          onClear={handleClear}
-        />
+        <Sidebar />
 
         <div className="flex-1 min-w-0 p-4 flex flex-col xl:flex-row gap-4 items-start">
 
