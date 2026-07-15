@@ -18,6 +18,7 @@ import {
 
 import {
   FaBell,
+  FaBars,
 } from "react-icons/fa"
 
 import {
@@ -26,6 +27,7 @@ import {
 
 import logo from "../../assets/navbar/logo1.png"
 import profile from "../../assets/navbar/profile.png"
+import { useSidebar } from "../../hooks/useSidebar"
 
 const NAV_ITEMS = [
   { label: "Explore", icon: HiOutlineMap, path: "/" },
@@ -38,12 +40,22 @@ const NAV_ITEMS = [
 function Navbar() {
 
   const { pathname } = useLocation()
+  const { toggleSidebar } = useSidebar()
 
   return (
 
     <div className="w-full px-1 pt-1">
 
-      <div className="w-full h-[54px] bg-white border border-[#ececec] rounded-[16px] shadow-sm flex items-center px-0">
+      <div className="w-full h-[54px] bg-white border border-[#ececec] rounded-[16px] shadow-sm flex items-center px-3 lg:px-0">
+
+        {/* HAMBURGER (mobile only) */}
+
+        <button
+          onClick={toggleSidebar}
+          className="lg:hidden mr-2 w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb] transition"
+        >
+          <FaBars className="text-[16px]" />
+        </button>
 
         {/* LOGO */}
 
@@ -52,8 +64,8 @@ function Navbar() {
           alt="logo"
           className="w-[100px] h-[70] p-30 object-contain shrink-0"
         />
-        {/* SEARCH */}
-        <div className="ml-6 w-[220px] h-[36px] bg-[#d6d9e0] border border-[#edf0f5] rounded-[12px] px-6 flex items-center shrink-0">
+        {/* SEARCH (hidden on mobile to avoid overflow) */}
+        <div className="hidden lg:flex ml-6 w-[220px] h-[36px] bg-[#d6d9e0] border border-[#edf0f5] rounded-[12px] px-6 items-center shrink-0">
 
           <input
             type="text"
@@ -63,9 +75,9 @@ function Navbar() {
 
         </div>
 
-        {/* MENU */}
+        {/* MENU (hidden on mobile) */}
 
-        <div className="flex items-center gap-4 ml-8 flex-1">
+        <div className="hidden lg:flex items-center gap-4 ml-8 flex-1">
 
           {NAV_ITEMS.map(({ label, icon: Icon, path }) => {
 
@@ -102,11 +114,11 @@ function Navbar() {
 
         {/* RIGHT */}
 
-        <div className="flex items-center gap-2 shrink-0">
+        <div className="flex items-center gap-2 shrink-0 ml-auto lg:ml-0">
 
-          {/* BUTTON */}
+          {/* BUTTON (hidden on mobile) */}
 
-          <button className="bg-[#2563eb] hover:bg-[#1d4ed8] transition text-white h-[32px] px-5 rounded-[9px] flex items-center gap-1 text-[13px] font-medium whitespace-nowrap">
+          <button className="hidden lg:flex bg-[#2563eb] hover:bg-[#1d4ed8] transition text-white h-[32px] px-5 rounded-[9px] items-center gap-1 text-[13px] font-medium whitespace-nowrap">
 
             <AiOutlinePlus className="text-[15px]" />
 

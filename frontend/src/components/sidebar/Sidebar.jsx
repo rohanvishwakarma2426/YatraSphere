@@ -1,3 +1,4 @@
+import { useEffect } from "react"
 import { Link, useLocation } from "react-router-dom"
 
 import {
@@ -11,7 +12,10 @@ import {
   FaBookOpen,
   FaTags,
   FaPen,
+  FaTimes,
 } from "react-icons/fa"
+
+import { useSidebar } from "../../hooks/useSidebar"
 
 const menuItems = [
   { label: "Home", icon: FaHome, path: "/" },
@@ -29,120 +33,153 @@ const menuItems = [
 function Sidebar() {
 
   const { pathname } = useLocation()
+  const { isOpen, closeSidebar } = useSidebar()
+
+  // Auto-close the mobile drawer whenever the user navigates to a new page.
+  useEffect(() => {
+    closeSidebar()
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pathname])
 
   return (
 
-    <div className="w-[220px] shrink-0 min-h-screen px-4 py-4">
+    <>
 
-      {/* MENU */}
+      {/* BACKDROP (mobile only, shown while drawer is open) */}
 
-      <div className="bg-white rounded-2xl p-3.5 shadow-sm border border-[#ececec]">
+      {isOpen && (
+        <div
+          onClick={closeSidebar}
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+        />
+      )}
 
-        <div className="space-y-0.5">
+      <div
+        className={`fixed inset-y-0 left-0 z-50 w-[260px] overflow-y-auto bg-[#f5f6fa] transform transition-transform duration-300 ease-in-out px-4 py-4
+          ${isOpen ? "translate-x-0" : "-translate-x-full"}
+          lg:static lg:z-auto lg:translate-x-0 lg:w-[220px] lg:shrink-0 lg:min-h-screen`}
+      >
 
-          {menuItems.map(({ label, icon: Icon, badge, path }) => {
+        {/* MOBILE CLOSE BUTTON */}
 
-            const active = path ? pathname === path : false
-
-            const content = (
-              <>
-                <Icon className="text-[15px] shrink-0" />
-
-                <span className="text-[13px]">
-                  {label}
-                </span>
-
-                {badge && (
-                  <span className="ml-auto bg-[#ef4444] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
-                    {badge}
-                  </span>
-                )}
-              </>
-            )
-
-            const className = `flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition ${
-              active
-                ? "bg-[#edf3ff] text-[#2563eb] font-semibold"
-                : "text-[#4b5563] hover:bg-[#f7f8fb]"
-            }`
-
-            return path ? (
-              <Link key={label} to={path} className={className}>
-                {content}
-              </Link>
-            ) : (
-              <div key={label} className={className}>
-                {content}
-              </div>
-            )
-
-          })}
-
-        </div>
-
-      </div>
-
-      {/* PREMIUM CARD */}
-
-      <div className="mt-4 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] rounded-2xl p-5 text-white">
-
-        <h2 className="text-[17px] font-bold">
-          Go Premium
-        </h2>
-
-        <p className="mt-2 text-[12px] leading-5 text-white/80">
-
-          Unlock exclusive itineraries,
-          AI planner, hidden gems
-          and more.
-
-        </p>
-
-        <button className="mt-4 w-full h-[40px] bg-white text-[#2563eb] rounded-xl text-[13px] font-semibold hover:scale-[1.02] transition">
-
-          Upgrade Now
-
+        <button
+          onClick={closeSidebar}
+          className="lg:hidden mb-3 ml-auto flex w-[32px] h-[32px] items-center justify-center rounded-full bg-white border border-[#ececec] text-[#4b5563]"
+        >
+          <FaTimes className="text-[13px]" />
         </button>
 
-      </div>
+        {/* MENU */}
 
-      {/* APP CARD */}
+        <div className="bg-white rounded-2xl p-3.5 shadow-sm border border-[#ececec]">
 
-      <div className="mt-4 bg-[#111827] rounded-2xl p-5 text-white">
+          <div className="space-y-0.5">
 
-        <h2 className="text-[17px] font-bold leading-6">
+            {menuItems.map(({ label, icon: Icon, badge, path }) => {
 
-          Take YatraSphere
-          Wherever You Go!
+              const active = path ? pathname === path : false
 
-        </h2>
+              const content = (
+                <>
+                  <Icon className="text-[15px] shrink-0" />
 
-        <p className="mt-2 text-[12px] text-gray-300 leading-5">
+                  <span className="text-[13px]">
+                    {label}
+                  </span>
 
-          Download our app for the
-          best travel experience.
+                  {badge && (
+                    <span className="ml-auto bg-[#ef4444] text-white text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                      {badge}
+                    </span>
+                  )}
+                </>
+              )
 
-        </p>
+              const className = `flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition ${
+                active
+                  ? "bg-[#edf3ff] text-[#2563eb] font-semibold"
+                  : "text-[#4b5563] hover:bg-[#f7f8fb]"
+              }`
 
-        <div className="mt-4 space-y-2">
+              return path ? (
+                <Link key={label} to={path} className={className}>
+                  {content}
+                </Link>
+              ) : (
+                <div key={label} className={className}>
+                  {content}
+                </div>
+              )
 
-          <button className="w-full h-[40px] bg-white/10 rounded-xl text-[13px]">
+            })}
 
-            Google Play
+          </div>
 
-          </button>
+        </div>
 
-          <button className="w-full h-[40px] bg-white/10 rounded-xl text-[13px]">
+        {/* PREMIUM CARD */}
 
-            App Store
+        <div className="mt-4 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] rounded-2xl p-5 text-white">
+
+          <h2 className="text-[17px] font-bold">
+            Go Premium
+          </h2>
+
+          <p className="mt-2 text-[12px] leading-5 text-white/80">
+
+            Unlock exclusive itineraries,
+            AI planner, hidden gems
+            and more.
+
+          </p>
+
+          <button className="mt-4 w-full h-[40px] bg-white text-[#2563eb] rounded-xl text-[13px] font-semibold hover:scale-[1.02] transition">
+
+            Upgrade Now
 
           </button>
 
         </div>
 
+        {/* APP CARD */}
+
+        <div className="mt-4 bg-[#111827] rounded-2xl p-5 text-white">
+
+          <h2 className="text-[17px] font-bold leading-6">
+
+            Take YatraSphere
+            Wherever You Go!
+
+          </h2>
+
+          <p className="mt-2 text-[12px] text-gray-300 leading-5">
+
+            Download our app for the
+            best travel experience.
+
+          </p>
+
+          <div className="mt-4 space-y-2">
+
+            <button className="w-full h-[40px] bg-white/10 rounded-xl text-[13px]">
+
+              Google Play
+
+            </button>
+
+            <button className="w-full h-[40px] bg-white/10 rounded-xl text-[13px]">
+
+              App Store
+
+            </button>
+
+          </div>
+
+        </div>
+
       </div>
 
-    </div>
+    </>
 
   )
 }
