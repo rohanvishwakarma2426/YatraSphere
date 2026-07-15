@@ -10,6 +10,11 @@ import Signup from "../pages/Signup/Signup"
 import Community from "../pages/Community/Community"
 import Trips from "../pages/Trips/Trips"
 import Alerts from "../pages/Alerts/Alerts"
+import Packages from "../pages/Packages/Packages"
+import BudgetCalculator from "../pages/BudgetCalculator/BudgetCalculator"
+import OffersDeals from "../pages/OffersDeals/OffersDeals"
+import ShareExperience from "../pages/ShareExperience/ShareExperience"
+import BlogsGuides from "../pages/BlogsGuides/BlogsGuides"
 
 
 function AppRoutes() {
@@ -60,6 +65,41 @@ function AppRoutes() {
         <Route
           path="/alerts"
           element={<Alerts />}
+        />
+
+        {/* PACKAGES */}
+
+        <Route
+          path="/packages"
+          element={<Packages />}
+        />
+
+        {/* BUDGET CALCULATOR */}
+
+        <Route
+          path="/budget-calculator"
+          element={<BudgetCalculator />}
+        />
+
+        {/* OFFERS & DEALS */}
+
+        <Route
+          path="/offers"
+          element={<OffersDeals />}
+        />
+
+        {/* SHARE EXPERIENCE */}
+
+        <Route
+          path="/share-experience"
+          element={<ShareExperience />}
+        />
+
+        {/* BLOGS & GUIDES */}
+
+        <Route
+          path="/blogs-guides"
+          element={<BlogsGuides />}
         />
 
       </Routes>

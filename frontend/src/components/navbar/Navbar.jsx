@@ -32,7 +32,7 @@ const NAV_ITEMS = [
   { label: "Community", icon: FiUsers, path: "/community" },
   { label: "Trips", icon: RiRoadMapLine, path: "/trips" },
   { label: "Alerts", icon: FaBell, path: "/alerts" },
-  { label: "Packages", icon: BsBag, path: null },
+  { label: "Packages", icon: BsBag, path: "/packages" },
 ]
 
 function Navbar() {

@@ -10,18 +10,20 @@ import {
   FaRoute,
   FaBookOpen,
   FaTags,
+  FaPen,
 } from "react-icons/fa"
 
 const menuItems = [
   { label: "Home", icon: FaHome, path: "/" },
   { label: "Explore Places", icon: FaMapMarkedAlt },
-  { label: "Budget Calculator", icon: FaCalculator },
+  { label: "Budget Calculator", icon: FaCalculator, path: "/budget-calculator" },
   { label: "Scam Alerts", icon: FaShieldAlt, path: "/alerts" },
   { label: "Trip Planner", icon: FaRoute, badge: "NEW", path: "/trips" },
   { label: "Community", icon: FaUsers, path: "/community" },
-  { label: "Blogs & Guides", icon: FaBookOpen },
-  { label: "Packages", icon: FaSuitcase },
-  { label: "Offers & Deals", icon: FaTags },
+  { label: "Blogs & Guides", icon: FaBookOpen, path: "/blogs-guides" },
+  { label: "Packages", icon: FaSuitcase, path: "/packages" },
+  { label: "Offers & Deals", icon: FaTags, path: "/offers" },
+  { label: "Share Experience", icon: FaPen, path: "/share-experience" },
 ]
 
 function Sidebar() {
