@@ -12,7 +12,7 @@ feed with location-based following, scam alerts, packages, and more.
 
 ## Project Structure
 
-
+```
 YatraSphere/
 ├── frontend/
 │   ├── src/
@@ -26,14 +26,15 @@ YatraSphere/
 │   │   └── utils/            → pure helper functions (tripHelpers, budgetHelpers, ...)
 │   └── package.json
 └── backend/
-├── app/
-│   ├── database/         → connection.py (env-based), base.py
-│   ├── models/            → SQLAlchemy models
-│   ├── routes/            → FastAPI routers
-│   ├── schemas/           → Pydantic request/response schemas
-│   ├── utils/security.py  → password hashing (passlib)
-│   └── main.py
-└── requirements.txt
+    ├── app/
+    │   ├── database/          → connection.py (env-based), base.py
+    │   ├── models/            → SQLAlchemy models
+    │   ├── routes/            → FastAPI routers
+    │   ├── schemas/           → Pydantic request/response schemas
+    │   └── utils/security.py  → password hashing (passlib)
+    ├── main.py
+    └── requirements.txt
+```
 
 
 ## Local Setup
