@@ -11,7 +11,7 @@ import BudgetCalculatorBox from "../../components/trips/BudgetCalculatorBox"
 import TripsSidebar from "../../components/trips/TripsSidebar"
 import { getTripStatus } from "../../utils/tripHelpers"
 
-const INITIAL_TRIPS = [
+export const INITIAL_TRIPS = [
   {
     id: 1,
     name: "Leh Ladakh Trip",

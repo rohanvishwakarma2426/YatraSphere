@@ -32,6 +32,7 @@ import logo from "../../assets/navbar/logo1.png"
 import profile from "../../assets/navbar/profile.png"
 import { useSidebar } from "../../hooks/useSidebar"
 import { useAuth } from "../../hooks/useAuth"
+import SearchBar from "./SearchBar"
 
 const NAV_ITEMS = [
   { label: "Explore", icon: HiOutlineMap, path: "/" },
@@ -78,15 +79,8 @@ function Navbar() {
           className="w-[100px] h-[70] p-30 object-contain shrink-0"
         />
         {/* SEARCH (hidden on mobile to avoid overflow) */}
-        <div className="hidden lg:flex ml-6 w-[220px] h-[36px] bg-[#d6d9e0] border border-[#edf0f5] rounded-[12px] px-6 items-center shrink-0">
 
-          <input
-            type="text"
-            placeholder="Search places, experiences..."
-            className="bg-transparent outline-none w-full text-[13px] text-[#6b7280]"
-          />
-
-        </div>
+        <SearchBar />
 
         {/* MENU (hidden on mobile) */}
 

@@ -1,6 +1,6 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Home from "../pages/home/Home";
+import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
 import Signup from "../pages/Signup/Signup";
 import Community from "../pages/Community/Community";
@@ -15,13 +15,21 @@ import Explore from "../pages/Explore/Explore";
 import Experiences from "../pages/Experiences/Experiences";
 import Guides from "../pages/Guides/Guides";
 import RequireAuth from "./RequireAuth";
+import LocationDashboard from "../pages/Location/LocationDashboard";
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* HOME */}
+        {/* HOME — protected, redirects to /login if not authenticated or guest */}
 
-        <Route path="/" element={<Home />} />
+        <Route
+          path="/"
+          element={
+            <RequireAuth>
+              <Home />
+            </RequireAuth>
+          }
+        />
 
         {/* LOGIN */}
 
@@ -62,9 +70,11 @@ function AppRoutes() {
         {/* BLOGS & GUIDES */}
 
         <Route path="/blogs-guides" element={<BlogsGuides />} />
+
         {/* EXPLORE PLACES */}
 
         <Route path="/explore" element={<Explore />} />
+
         {/* EXPERIENCES */}
 
         <Route path="/experiences" element={<Experiences />} />
@@ -72,16 +82,10 @@ function AppRoutes() {
         {/* GUIDES */}
 
         <Route path="/guides" element={<Guides />} />
-        {/* HOME */}
 
-        <Route
-          path="/"
-          element={
-            <RequireAuth>
-              <Home />
-            </RequireAuth>
-          }
-        />
+        {/* LOCATION DASHBOARD */}
+
+        <Route path="/location/:name" element={<LocationDashboard />} />
       </Routes>
     </BrowserRouter>
   );

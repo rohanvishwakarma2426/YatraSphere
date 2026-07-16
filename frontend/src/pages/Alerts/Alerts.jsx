@@ -9,7 +9,7 @@ import { CATEGORIES, CATEGORY_META, groupAlertsByDay } from "../../utils/alertHe
 
 const now = Date.now()
 
-const INITIAL_ALERTS = [
+export const INITIAL_ALERTS = [
   {
     id: 1,
     category: "safety",

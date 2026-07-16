@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import heroBg from "../../assets/hero/hero-bg.jpg";
+import LocationAutocomplete from "./LocationAutocomplete";
 
 function HeroSection() {
   const navigate = useNavigate();
@@ -14,6 +15,11 @@ function HeroSection() {
     guides: "Find local travel guides...",
   };
 
+  const handleLocationSelect = (place) => {
+    // place.name is the clean, real place name (e.g. "Manali") from Nominatim
+    navigate(`/location/${encodeURIComponent(place.name)}`);
+  };
+
   const handleSearch = () => {
     if (!search.trim()) {
       alert("Please enter something to search.");
@@ -22,7 +28,8 @@ function HeroSection() {
 
     switch (activeTab) {
       case "destinations":
-        navigate(`/explore?q=${encodeURIComponent(search)}`);
+        // No suggestion was clicked — fall back to whatever was typed.
+        navigate(`/location/${encodeURIComponent(search.trim())}`);
         break;
 
       case "experiences":
@@ -91,16 +98,30 @@ function HeroSection() {
             {/* Search */}
 
             <div className="mt-3 flex items-center gap-2">
-              <input
-                type="text"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                onKeyDown={(e) => {
-                  if (e.key === "Enter") handleSearch();
-                }}
-                placeholder={placeholders[activeTab]}
-                className="flex-1 h-[42px] border border-[#ececec] rounded-xl px-4 outline-none focus:border-[#2563eb] text-[13px]"
-              />
+
+              {activeTab === "destinations" ? (
+
+                <LocationAutocomplete
+                  value={search}
+                  onChange={setSearch}
+                  onSelect={handleLocationSelect}
+                  placeholder={placeholders.destinations}
+                />
+
+              ) : (
+
+                <input
+                  type="text"
+                  value={search}
+                  onChange={(e) => setSearch(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Enter") handleSearch();
+                  }}
+                  placeholder={placeholders[activeTab]}
+                  className="flex-1 h-[42px] border border-[#ececec] rounded-xl px-4 outline-none focus:border-[#2563eb] text-[13px]"
+                />
+
+              )}
 
               <button
                 onClick={handleSearch}

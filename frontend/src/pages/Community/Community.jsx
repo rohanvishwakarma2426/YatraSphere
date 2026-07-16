@@ -8,14 +8,14 @@ import CreatePostBox from "../../components/community/CreatePostBox"
 import PostCard from "../../components/community/PostCard"
 import CommunitySidebar from "../../components/community/CommunitySidebar"
 
-const ALL_LOCATIONS = [
+export const ALL_LOCATIONS = [
   "Manali", "Kasol", "Goa", "Leh Ladakh", "Varanasi",
   "Jaipur", "Rishikesh", "Udaipur", "Spiti Valley",
 ]
 
 const INITIAL_FOLLOWED = ["Manali", "Kasol", "Goa"]
 
-const INITIAL_POSTS = [
+export const INITIAL_POSTS = [
   {
     id: 1,
     author: "Ananya Verma",
