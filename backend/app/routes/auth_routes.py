@@ -1,20 +1,31 @@
-from fastapi import APIRouter
-from app.database.connection import SessionLocal
+from fastapi import APIRouter, Depends, HTTPException
+from sqlalchemy.orm import Session
+
+from app.database.connection import get_db
 from app.models.user_model import User
+from app.schemas.user_schema import UserRegister, UserLogin
+from app.utils.security import hash_password, verify_password
 
 router = APIRouter()
+
 
 # ================= SIGNUP =================
 
 @router.post("/signup")
-def signup(user: dict):
+def signup(user: UserRegister, db: Session = Depends(get_db)):
 
-    db = SessionLocal()
+    existing_user = db.query(User).filter(User.email == user.email).first()
+
+    if existing_user:
+        raise HTTPException(
+            status_code=400,
+            detail="An account with this email already exists.",
+        )
 
     new_user = User(
-        name=user["name"],
-        email=user["email"],
-        password=user["password"]
+        name=user.name,
+        email=user.email,
+        password=hash_password(user.password),
     )
 
     db.add(new_user)
@@ -22,36 +33,33 @@ def signup(user: dict):
     db.refresh(new_user)
 
     return {
-        "message": "Account Created Successfully"
+        "message": "Account Created Successfully",
+        "user": {
+            "id": new_user.id,
+            "name": new_user.name,
+            "email": new_user.email,
+        },
     }
 
 
 # ================= LOGIN =================
 
 @router.post("/login")
-def login(user: dict):
+def login(user: UserLogin, db: Session = Depends(get_db)):
 
-    db = SessionLocal()
-
-    existing_user = db.query(User).filter(
-        User.email == user["email"]
-    ).first()
+    existing_user = db.query(User).filter(User.email == user.email).first()
 
     if not existing_user:
-        return {
-            "message": "User Not Found"
-        }
+        raise HTTPException(status_code=401, detail="User Not Found")
 
-    if existing_user.password != user["password"]:
-        return {
-            "message": "Wrong Password"
-        }
+    if not verify_password(user.password, existing_user.password):
+        raise HTTPException(status_code=401, detail="Wrong Password")
 
     return {
         "message": "Login Success",
         "user": {
             "id": existing_user.id,
             "name": existing_user.name,
-            "email": existing_user.email
-        }
+            "email": existing_user.email,
+        },
     }

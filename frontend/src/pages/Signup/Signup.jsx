@@ -1,12 +1,14 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const Signup = () => {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const navigate = useNavigate();
+  const { login, loginAsGuest } = useAuth();
 
   const handleSignup = async () => {
     try {
@@ -16,11 +18,18 @@ const Signup = () => {
         password,
       });
 
+      login(response.data.user);
       alert(response.data.message);
+      navigate("/");
     } catch (error) {
       console.log(error);
-      alert("Signup Failed");
+      alert(error.response?.data?.detail || "Signup Failed");
     }
+  };
+
+  const handleSkip = () => {
+    loginAsGuest();
+    navigate("/");
   };
 
   return (
@@ -98,6 +107,13 @@ const Signup = () => {
               >
                 Login
               </span>
+            </p>
+
+            <p
+              onClick={handleSkip}
+              className="text-center text-gray-400 mt-1 cursor-pointer hover:text-gray-600 transition text-sm"
+            >
+              Skip for now →
             </p>
           </div>
         </div>

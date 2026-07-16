@@ -1,4 +1,4 @@
-import { FaCalculator, FaExclamationTriangle, FaHeart, FaRegComment, FaShare } from "react-icons/fa"
+import { FaExclamationTriangle, FaHeart, FaRegComment, FaShare } from "react-icons/fa"
 
 const scamAlerts = [
   { title: "Manali Taxi Overcharging", desc: "Be aware of fixed price scams...", time: "New", isNew: true },
@@ -11,69 +11,6 @@ function RightSidebar() {
   return (
 
     <div className="w-full xl:w-[300px] xl:shrink-0 flex flex-col gap-4">
-
-      {/* BUDGET CALCULATOR */}
-
-      <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
-
-        <div className="flex items-center gap-2.5">
-
-          <div className="w-[32px] h-[32px] rounded-lg bg-[#eaf1ff] flex items-center justify-center shrink-0">
-            <FaCalculator className="text-[#2563eb] text-[14px]" />
-          </div>
-
-          <div>
-            <h2 className="text-[14.5px] font-bold text-[#111827]">
-              Budget Calculator
-            </h2>
-            <p className="text-[11px] text-[#6b7280]">
-              Plan your trip smartly with real estimated budget.
-            </p>
-          </div>
-
-        </div>
-
-        {/* FORM */}
-
-        <div className="mt-4 space-y-3">
-
-          <select className="w-full h-[42px] border border-[#ececec] rounded-xl px-3.5 outline-none text-[12.5px]">
-            <option>Manali, Himachal Pradesh</option>
-          </select>
-
-          <select className="w-full h-[42px] border border-[#ececec] rounded-xl px-3.5 outline-none text-[12.5px]">
-            <option>3 Days</option>
-          </select>
-
-          <select className="w-full h-[42px] border border-[#ececec] rounded-xl px-3.5 outline-none text-[12.5px]">
-            <option>Budget Travel</option>
-          </select>
-
-          <button className="w-full h-[44px] bg-[#2563eb] text-white rounded-xl text-[13px] font-semibold hover:bg-[#1d4ed8] transition">
-            Calculate My Budget
-          </button>
-
-        </div>
-
-        {/* RESULT */}
-
-        <div className="mt-4 bg-[#f5fbf7] rounded-xl p-4 border border-[#d8f5df]">
-
-          <p className="text-[#6b7280] text-[11.5px]">
-            Estimated Budget
-          </p>
-
-          <h1 className="text-[#16a34a] text-[22px] font-bold mt-1">
-            ₹4,250 - ₹5,700
-          </h1>
-
-          <p className="text-[#16a34a] mt-1 text-[11.5px] font-medium">
-            (Per Person)
-          </p>
-
-        </div>
-
-      </div>
 
       {/* SCAM ALERTS */}
 

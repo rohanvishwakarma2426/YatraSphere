@@ -1,10 +1,12 @@
 import { useState } from "react";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../hooks/useAuth";
 
 const Login = () => {
 
   const navigate = useNavigate();
+  const { login, loginAsGuest } = useAuth();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -23,10 +25,7 @@ const Login = () => {
 
       if(response.data.message === "Login Success"){
 
-        localStorage.setItem(
-          "user",
-          JSON.stringify(response.data.user)
-        );
+        login(response.data.user);
 
         alert("Login Success");
 
@@ -38,8 +37,13 @@ const Login = () => {
 
     } catch (error) {
       console.log(error);
-      alert("Login Failed");
+      alert(error.response?.data?.detail || "Login Failed");
     }
+  };
+
+  const handleSkip = () => {
+    loginAsGuest();
+    navigate("/");
   };
 
   return (
@@ -103,13 +107,20 @@ const Login = () => {
             </button>
 
             <p className="text-center text-gray-500 mt-4">
-              Don’t have an account?{" "}
+              Don't have an account?{" "}
               <span
                 onClick={() => navigate("/signup")}
                 className="text-blue-600 cursor-pointer font-semibold"
               >
                 Signup
               </span>
+            </p>
+
+            <p
+              onClick={handleSkip}
+              className="text-center text-gray-400 mt-1 cursor-pointer hover:text-gray-600 transition text-sm"
+            >
+              Skip for now →
             </p>
 
           </div>

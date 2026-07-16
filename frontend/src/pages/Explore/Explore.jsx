@@ -8,15 +8,16 @@ import ExperienceCard from "../../components/explore/ExperienceCard"
 import CategoryGrid from "../../components/explore/CategoryGrid"
 import { DESTINATIONS, TRENDING_EXPERIENCES } from "../../components/explore/exploreData"
 import { EXPLORE_CATEGORIES, EXPLORE_SORT_OPTIONS, filterAndSortDestinations } from "../../utils/exploreHelpers"
-
+import { useSearchParams } from "react-router-dom";
 function Explore() {
-
-  const [search, setSearch] = useState("")
+const [searchParams] = useSearchParams();
+  const [search, setSearch] = useState(
+    searchParams.get("q") || ""
+)
   const [category, setCategory] = useState(null)
   const [sortBy, setSortBy] = useState("recommended")
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [wishlist, setWishlist] = useState(new Set())
-
   const destScrollRef = useRef(null)
   const expScrollRef = useRef(null)
   const pillScrollRef = useRef(null)
