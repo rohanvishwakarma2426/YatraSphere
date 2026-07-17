@@ -1,29 +1,27 @@
 import { useState } from "react"
+import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import {
   FaMapMarkerAlt, FaLocationArrow, FaLightbulb, FaExclamationTriangle,
   FaCommentDots, FaStickyNote, FaEllipsisH, FaCloudUploadAlt,
-  FaBold, FaItalic, FaListUl, FaQuoteRight, FaLink, FaImage, FaCompass, FaSpinner,
+  FaBold, FaItalic, FaListUl, FaQuoteRight, FaLink, FaImage,
 } from "react-icons/fa"
 
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import ShareExperienceRightSidebar from "../../components/shareExperience/ShareExperienceRightSidebar"
-import { createExperience } from "../../utils/experienceSearch"
+import { useAuth } from "../../hooks/useAuth"
+import { GUIDE_CATEGORIES } from "../../utils/guideHelpers"
 
 const CATEGORIES = [
   { key: "awareness", label: "Awareness", desc: "Share helpful info & awareness", icon: FaLightbulb, bg: "bg-[#eaf1ff]", color: "text-[#2563eb]" },
   { key: "scam", label: "Scam / Fraud", desc: "Warn others about scams & frauds", icon: FaExclamationTriangle, bg: "bg-[#fff4e6]", color: "text-[#d97706]" },
   { key: "thoughts", label: "Thoughts", desc: "Share your personal thoughts", icon: FaCommentDots, bg: "bg-[#e9f9ef]", color: "text-[#16a34a]" },
   { key: "tips", label: "Tips", desc: "Useful tips for travelers", icon: FaStickyNote, bg: "bg-[#f2edfd]", color: "text-[#7c3aed]" },
+  // Guide categories — posting under any of these also makes the post
+  // show up in Guide Search (Blogs & Guides page).
+  ...GUIDE_CATEGORIES,
   { key: "other", label: "Other", desc: "Other experiences & stories", icon: FaEllipsisH, bg: "bg-[#f3f4f6]", color: "text-[#6b7280]" },
-]
-
-// This is the taxonomy that Experience Search actually indexes on — separate
-// from the community-post categories above.
-const EXPERIENCE_TYPES = [
-  "Camping", "Trekking", "Nightlife", "Cafes",
-  "River Rafting", "Solo Trips", "Hidden Gems", "Other",
 ]
 
 const TITLE_LIMIT = 100
@@ -32,15 +30,14 @@ const STORY_LIMIT = 3000
 function ShareExperience() {
 
   const navigate = useNavigate()
+  const { user } = useAuth()
 
   const [location, setLocation] = useState("")
   const [category, setCategory] = useState("awareness")
-  const [experienceType, setExperienceType] = useState("")
   const [title, setTitle] = useState("")
   const [story, setStory] = useState("")
   const [files, setFiles] = useState([])
-  const [publishing, setPublishing] = useState(false)
-  const [error, setError] = useState("")
+  const [submitting, setSubmitting] = useState(false)
 
   const handleFileSelect = (e) => {
     const picked = Array.from(e.target.files || []).slice(0, 5)
@@ -51,44 +48,42 @@ function ShareExperience() {
 
   const handlePublish = async () => {
 
-    if (!isValid) return
-
-    setError("")
-
-    // Only tag this into Experience Search if the user actually picked a
-    // type — this form still works for Community-style posts without one.
-    if (experienceType) {
-
-      setPublishing(true)
-
-      try {
-
-        await createExperience({
-          title,
-          destination: location,
-          category: experienceType,
-          description: story,
-          author: "You",
-        })
-
-        navigate(`/experiences?q=${encodeURIComponent(experienceType)}`)
-
-      } catch (err) {
-        setError("Couldn't publish your experience. Please try again.")
-        setPublishing(false)
-        return
-      }
-
-      setPublishing(false)
-
-    } else {
-
-      // No experience type selected — this is a community-only post.
-      // (Community/Alerts backend wiring comes next, per our plan.)
-      alert("Published! (Community & Alerts saving is coming in the next step.)")
-
+    if (!user) {
+      alert("Please login to publish your experience.")
+      navigate("/login")
+      return
     }
 
+    if (!isValid || submitting) return
+
+    setSubmitting(true)
+
+    try {
+
+      await axios.post("http://127.0.0.1:8000/posts", {
+        user_id: user.id,
+        title: title.trim(),
+        content: story.trim(),
+        location: location.trim(),
+        category,
+      })
+
+      alert("Your experience has been published!")
+
+      setLocation("")
+      setCategory("awareness")
+      setTitle("")
+      setStory("")
+      setFiles([])
+
+      navigate("/community")
+
+    } catch (error) {
+      console.log(error)
+      alert(error.response?.data?.detail || "Failed to publish. Please try again.")
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
@@ -142,7 +137,7 @@ function ShareExperience() {
                 <h2 className="text-[14px] font-bold text-[#111827]">2. What type of experience do you want to share?</h2>
                 <p className="text-[12px] text-[#6b7280] mt-0.5 mb-2.5">Choose the category that best fits your story.</p>
 
-                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3">
+                <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {CATEGORIES.map(({ key, label, desc, icon: Icon, bg, color }) => (
                     <button
                       key={key}
@@ -159,29 +154,6 @@ function ShareExperience() {
                     </button>
                   ))}
                 </div>
-              </div>
-
-              {/* STEP 2b: EXPERIENCE TYPE (feeds Experience Search) */}
-
-              <div className="mb-6">
-                <h2 className="text-[14px] font-bold text-[#111827] flex items-center gap-2">
-                  <FaCompass className="text-[12px] text-[#2563eb]" />
-                  Tag an activity type (optional)
-                </h2>
-                <p className="text-[12px] text-[#6b7280] mt-0.5 mb-2.5">
-                  Makes your post discoverable in Experience Search — pick one if it fits.
-                </p>
-
-                <select
-                  value={experienceType}
-                  onChange={(e) => setExperienceType(e.target.value)}
-                  className="w-full h-[46px] border border-[#ececec] rounded-xl px-3.5 outline-none text-[13px] focus:border-[#2563eb]"
-                >
-                  <option value="">No activity type — this is a general post</option>
-                  {EXPERIENCE_TYPES.map((type) => (
-                    <option key={type} value={type}>{type}</option>
-                  ))}
-                </select>
               </div>
 
               {/* STEP 3: TITLE */}
@@ -267,10 +239,6 @@ function ShareExperience() {
 
             </div>
 
-            {error && (
-              <p className="text-[12.5px] text-[#dc2626] px-1">{error}</p>
-            )}
-
             {/* ACTIONS */}
 
             <div className="flex items-center justify-between">
@@ -278,12 +246,11 @@ function ShareExperience() {
                 Save as Draft
               </button>
               <button
+                disabled={!isValid || submitting}
                 onClick={handlePublish}
-                disabled={!isValid || publishing}
-                className="h-[46px] px-6 bg-[#2563eb] hover:bg-[#1d4ed8] disabled:opacity-40 disabled:cursor-not-allowed transition text-white rounded-xl text-[13px] font-semibold flex items-center gap-2"
+                className="h-[46px] px-6 bg-[#2563eb] hover:bg-[#1d4ed8] disabled:opacity-40 disabled:cursor-not-allowed transition text-white rounded-xl text-[13px] font-semibold"
               >
-                {publishing && <FaSpinner className="animate-spin text-[13px]" />}
-                {publishing ? "Publishing..." : "Publish Experience"}
+                {submitting ? "Publishing..." : "Publish Experience"}
               </button>
             </div>
 

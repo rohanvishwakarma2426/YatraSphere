@@ -1,9 +1,12 @@
-import { useState } from "react"
-import { FaChevronLeft, FaChevronRight, FaRegBookmark, FaClock } from "react-icons/fa"
+import { useEffect, useState } from "react"
+import axios from "axios"
+import { FaChevronLeft, FaChevronRight, FaRegBookmark, FaClock, FaSearch, FaTimes } from "react-icons/fa"
 
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import BlogsRightSidebar from "../../components/blogs/BlogsRightSidebar"
+import GuideResultCard from "../../components/blogs/GuideResultCard"
+import { GUIDE_CATEGORIES } from "../../utils/guideHelpers"
 import {
   FEATURED_GUIDES, LATEST_ARTICLES, TRAVEL_TIPS_TRICKS,
 } from "../../components/blogs/blogsData"
@@ -11,6 +14,54 @@ import {
 function BlogsGuides() {
 
   const [featuredIndex, setFeaturedIndex] = useState(0)
+
+  const [searchQuery, setSearchQuery] = useState("")
+  const [activeCategory, setActiveCategory] = useState(null)
+  const [results, setResults] = useState([])
+  const [loading, setLoading] = useState(false)
+  const [searched, setSearched] = useState(false)
+
+  const isSearchActive = searchQuery.trim().length > 0 || activeCategory !== null
+
+  useEffect(() => {
+
+    if (!isSearchActive) {
+      return
+    }
+
+    const timer = setTimeout(async () => {
+
+      setLoading(true)
+
+      try {
+
+        const response = await axios.get("http://127.0.0.1:8000/api/guides/search", {
+          params: {
+            q: searchQuery.trim() || undefined,
+            category: activeCategory || undefined,
+          },
+        })
+
+        setResults(response.data)
+
+      } catch (error) {
+        console.log(error)
+        setResults([])
+      } finally {
+        setLoading(false)
+        setSearched(true)
+      }
+
+    }, 400)
+
+    return () => clearTimeout(timer)
+
+  }, [searchQuery, activeCategory, isSearchActive])
+
+  const clearSearch = () => {
+    setSearchQuery("")
+    setActiveCategory(null)
+  }
 
   const featured = FEATURED_GUIDES[featuredIndex]
 
@@ -37,6 +88,82 @@ function BlogsGuides() {
               <h1 className="text-[22px] font-bold text-[#111827]">Blogs &amp; Guides</h1>
               <p className="text-[13px] text-[#6b7280] mt-1">Travel stories, tips and in-depth guides to help you explore the world better.</p>
             </div>
+
+            {/* GUIDE SEARCH */}
+
+            <div className="bg-white rounded-2xl border border-[#ececec] shadow-sm p-4">
+
+              <div className="relative">
+
+                <FaSearch className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[12px] text-[#9ca3af]" />
+
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  placeholder="Search guides, e.g. 'Manali budget' or 'Goa safety'..."
+                  className="w-full h-[42px] border border-[#ececec] rounded-xl pl-9 pr-9 outline-none text-[13px] focus:border-[#2563eb]"
+                />
+
+                {isSearchActive && (
+                  <button
+                    onClick={clearSearch}
+                    className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#9ca3af] hover:text-[#111827] transition"
+                  >
+                    <FaTimes className="text-[12px]" />
+                  </button>
+                )}
+
+              </div>
+
+              <div className="flex items-center gap-2 mt-3 flex-wrap">
+
+                {GUIDE_CATEGORIES.map(({ key, label, icon: Icon }) => (
+                  <button
+                    key={key}
+                    onClick={() => setActiveCategory((c) => (c === key ? null : key))}
+                    className={`h-[32px] px-3.5 rounded-lg text-[12px] font-semibold flex items-center gap-1.5 transition ${
+                      activeCategory === key
+                        ? "bg-[#2563eb] text-white"
+                        : "bg-[#f5f7fb] text-[#4b5563] hover:bg-[#eef1f6]"
+                    }`}
+                  >
+                    <Icon className="text-[11px]" />
+                    {label}
+                  </button>
+                ))}
+
+              </div>
+
+            </div>
+
+            {/* SEARCH RESULTS */}
+
+            {isSearchActive ? (
+
+              <div>
+
+                <h2 className="text-[16px] font-bold text-[#111827] mb-3">
+                  {loading ? "Searching..." : `${results.length} guide${results.length === 1 ? "" : "s"} found`}
+                </h2>
+
+                {!loading && searched && results.length === 0 ? (
+                  <div className="bg-white rounded-2xl border border-[#ececec] p-8 text-center text-[#6b7280] text-[13px]">
+                    No guides found yet. Be the first to share one from "Share Experience"!
+                  </div>
+                ) : (
+                  <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {results.map((post) => (
+                      <GuideResultCard key={post.id} post={post} />
+                    ))}
+                  </div>
+                )}
+
+              </div>
+
+            ) : (
+
+              <>
 
             {/* FEATURED CAROUSEL */}
 
@@ -148,6 +275,10 @@ function BlogsGuides() {
               </div>
 
             </div>
+
+              </>
+
+            )}
 
           </div>
 
