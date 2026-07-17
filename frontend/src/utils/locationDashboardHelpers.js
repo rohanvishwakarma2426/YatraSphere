@@ -2,18 +2,16 @@ import { DESTINATIONS } from "../components/explore/exploreData"
 import { PACKAGES } from "../components/packages/packagesData"
 import { TOP_DEALS } from "../components/offers/offersData"
 import { FEATURED_GUIDES } from "../components/blogs/blogsData"
-import { INITIAL_POSTS } from "../pages/Community/Community"
 import { INITIAL_ALERTS } from "../pages/Alerts/Alerts"
 import { INITIAL_TRIPS } from "../pages/Trips/Trips"
 
 // Case-insensitive "does this field mention that location" check.
-// Location fields across the app look like "Manali, Himachal Pradesh" or
-// just "Manali" — a substring match on the location name covers both.
 function mentions(field, locationName) {
   if (!field) return false
   return field.toLowerCase().includes(locationName.trim().toLowerCase())
 }
 
+// Everything except posts is still local mock data, so this part stays sync.
 export function getLocationDashboardData(locationName) {
 
   const destinations = DESTINATIONS.filter(
@@ -30,12 +28,30 @@ export function getLocationDashboardData(locationName) {
     (g) => mentions(g.title, locationName) || mentions(g.desc, locationName)
   )
 
-  const posts = INITIAL_POSTS.filter((p) => mentions(p.location, locationName))
-
   const alerts = INITIAL_ALERTS.filter((a) => mentions(a.location, locationName))
 
   const trips = INITIAL_TRIPS.filter((t) => mentions(t.location, locationName))
 
-  return { destinations, packages, offers, guides, posts, alerts, trips }
+  return { destinations, packages, offers, guides, alerts, trips }
+
+}
+
+// Posts now live in the real backend (Post table), so they have to be
+// fetched — this is async, called separately from a useEffect.
+export async function fetchLocationPosts(locationName) {
+
+  try {
+
+    const res = await fetch("http://127.0.0.1:8000/posts")
+    if (!res.ok) return []
+
+    const allPosts = await res.json()
+
+    return allPosts.filter((p) => mentions(p.location, locationName))
+
+  } catch (err) {
+    console.error("Failed to fetch posts for location dashboard:", err)
+    return []
+  }
 
 }

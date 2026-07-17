@@ -23,6 +23,7 @@ class PostCreate(BaseModel):
     content: str = Field(min_length=1, max_length=5000)
     location: Optional[str] = None
     category: str = "other"
+    image_url: Optional[str] = None
 
 
 class AuthorOut(BaseModel):
@@ -40,6 +41,7 @@ class PostOut(BaseModel):
     content: str
     location: Optional[str]
     category: str
+    image_url: Optional[str] = None
     likes_count: int
     created_at: datetime
     author: AuthorOut

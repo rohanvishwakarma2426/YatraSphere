@@ -17,6 +17,8 @@ class Post(Base):
     # "budget_guide" | "safety_guide" | "packing_list" | "food_guide" | "itinerary" | "best_time"  <- guide posts
     category = Column(String, nullable=False, default="other")
 
+    image_url = Column(String, nullable=True)
+
     likes_count = Column(Integer, default=0)
     created_at = Column(DateTime(timezone=True), server_default=func.now())
 

@@ -1,10 +1,10 @@
-import { useState, useMemo } from "react"
-import { FaSearch, FaMapMarkerAlt, FaTimes } from "react-icons/fa"
+import { useState, useEffect, useMemo } from "react"
+import axios from "axios"
+import { FaSearch, FaMapMarkerAlt, FaTimes, FaSpinner } from "react-icons/fa"
 
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import StoriesBar from "../../components/community/StoriesBar"
-import CreatePostBox from "../../components/community/CreatePostBox"
 import PostCard from "../../components/community/PostCard"
 import CommunitySidebar from "../../components/community/CommunitySidebar"
 
@@ -15,98 +15,71 @@ export const ALL_LOCATIONS = [
 
 const INITIAL_FOLLOWED = ["Manali", "Kasol", "Goa"]
 
-export const INITIAL_POSTS = [
-  {
-    id: 1,
-    author: "Ananya Verma",
-    avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop",
-    location: "Spiti Valley",
-    timeAgo: "4h ago",
-    title: "Spiti Valley in July is a different vibe!",
-    text: "The roads are challenging but the views are totally worth it. Here's a glimpse of my recent trip to this beautiful cold desert.",
-    images: [
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=500&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=500&auto=format&fit=crop",
-      "https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=500&auto=format&fit=crop",
-    ],
-    tags: ["SpitiValley", "HimachalPradesh", "RoadTrip"],
-    likes: 245,
-    comments: 32,
-    shares: 8,
-  },
-  {
-    id: 2,
-    author: "Rohit Backpacker",
-    avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop",
-    location: "Manali",
-    timeAgo: "6h ago",
-    text: "Just completed the Manali trip in ₹3500. Here's my 3 day complete budget breakdown for fellow backpackers!",
-    images: [
-      "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=500&auto=format&fit=crop",
-    ],
-    tags: ["Manali", "BudgetTravel"],
-    likes: 128,
-    comments: 32,
-    shares: 15,
-  },
-  {
-    id: 3,
-    author: "Priya Menon",
-    avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=200&auto=format&fit=crop",
-    location: "Goa",
-    timeAgo: "1d ago",
-    text: "Found this hidden beach shack in South Goa with the best sunset view and no crowds at all. DM me for the exact location!",
-    images: [
-      "https://images.unsplash.com/photo-1507525428034-b723cf961d3e?q=80&w=500&auto=format&fit=crop",
-    ],
-    tags: ["Goa", "HiddenGem"],
-    likes: 312,
-    comments: 54,
-    shares: 21,
-  },
-  {
-    id: 4,
-    author: "Karan Thapa",
-    avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop",
-    location: "Kasol",
-    timeAgo: "2d ago",
-    text: "Trekked from Kasol to Kheerganga in one day. Tough but so worth it for those hot springs at the top.",
-    images: [],
-    tags: ["Kasol", "Trekking"],
-    likes: 96,
-    comments: 12,
-    shares: 4,
-  },
-  {
-    id: 5,
-    author: "Simran Kaur",
-    avatar: "https://images.unsplash.com/photo-1531123897727-8f129e1688ce?q=80&w=200&auto=format&fit=crop",
-    location: "Varanasi",
-    timeAgo: "3d ago",
-    text: "The evening Ganga Aarti at Dashashwamedh Ghat is something every traveler should witness at least once.",
-    images: [
-      "https://images.unsplash.com/photo-1561361058-c24cecae35ca?q=80&w=500&auto=format&fit=crop",
-    ],
-    tags: ["Varanasi", "Spiritual"],
-    likes: 178,
-    comments: 22,
-    shares: 9,
-  },
-]
+const DEFAULT_AVATAR =
+  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop"
 
-const INITIAL_STORIES = [
-  { id: 1, author: "Ananya Verma", location: "Spiti Valley", avatar: "https://images.unsplash.com/photo-1544005313-94ddf0286df2?q=80&w=200&auto=format&fit=crop" },
-  { id: 2, author: "Rohit Sharma", location: "Manali", avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop" },
-  { id: 3, author: "Priya Menon", location: "Goa", avatar: "https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?q=80&w=200&auto=format&fit=crop" },
-  { id: 4, author: "Karan Thapa", location: "Kasol", avatar: "https://images.unsplash.com/photo-1500648767791-00dcc994a43e?q=80&w=200&auto=format&fit=crop" },
-]
+// Turns a Postgres timestamp into "4h ago" / "2d ago" style text.
+function timeAgo(dateString) {
+  const diffMs = Date.now() - new Date(dateString).getTime()
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return "Just now"
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
+
+// Maps the backend's Post shape into what <PostCard /> expects.
+function mapPost(p) {
+  return {
+    id: p.id,
+    author: p.author?.name || "Traveler",
+    avatar: DEFAULT_AVATAR,
+    location: p.location || "Unknown",
+    timeAgo: timeAgo(p.created_at),
+    title: p.title,
+    text: p.content,
+    images: [],
+    tags: [p.category],
+    likes: p.likes_count,
+    comments: 0,
+    shares: 0,
+  }
+}
 
 function Community() {
 
   const [followedLocations, setFollowedLocations] = useState(INITIAL_FOLLOWED)
-  const [posts, setPosts] = useState(INITIAL_POSTS)
+  const [posts, setPosts] = useState([])
+  const [loading, setLoading] = useState(true)
+  const [loadError, setLoadError] = useState("")
   const [activeTab, setActiveTab] = useState("feed") // "feed" | "explore"
   const [searchQuery, setSearchQuery] = useState("")
+
+  useEffect(() => {
+
+    let cancelled = false
+    setLoading(true)
+
+    axios.get("http://127.0.0.1:8000/posts")
+      .then((res) => {
+        if (!cancelled) {
+          setPosts(res.data.map(mapPost))
+          setLoadError("")
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to load posts:", err)
+        if (!cancelled) setLoadError("Couldn't load posts right now. Is the backend running?")
+      })
+      .finally(() => {
+        if (!cancelled) setLoading(false)
+      })
+
+    return () => { cancelled = true }
+
+  }, [])
 
   const toggleFollow = (location) => {
     setFollowedLocations((prev) =>
@@ -116,40 +89,19 @@ function Community() {
     )
   }
 
-  const handleCreatePost = ({ text, location }) => {
-
-    const newPost = {
-      id: Date.now(),
-      author: "You",
-      avatar: "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop",
-      location,
-      timeAgo: "Just now",
-      text,
-      images: [],
-      tags: [],
-      likes: 0,
-      comments: 0,
-      shares: 0,
-    }
-
-    setPosts((prev) => [newPost, ...prev])
-
-    // posting about a location implies interest — auto-follow it so it shows in feed
-    if (!followedLocations.includes(location)) {
-      setFollowedLocations((prev) => [...prev, location])
-    }
-
+  // Case-insensitive, partial match — "manali" or "Manali, HP" both match
+  // a followed "Manali", instead of requiring an exact string match.
+  const isLocationFollowed = (postLocation) => {
+    if (!postLocation) return false
+    const loc = postLocation.toLowerCase()
+    return followedLocations.some(
+      (followed) => loc.includes(followed.toLowerCase()) || followed.toLowerCase().includes(loc)
+    )
   }
 
-  // FEED TAB: only posts/stories from followed locations
   const feedPosts = useMemo(
-    () => posts.filter((p) => followedLocations.includes(p.location)),
+    () => posts.filter((p) => isLocationFollowed(p.location)),
     [posts, followedLocations]
-  )
-
-  const feedStories = useMemo(
-    () => INITIAL_STORIES.filter((s) => followedLocations.includes(s.location)),
-    [followedLocations]
   )
 
   // EXPLORE TAB: requires a search query, shows posts matching that location
@@ -209,16 +161,27 @@ function Community() {
 
             </div>
 
-            {activeTab === "feed" && (
+            {loading && (
+              <div className="flex items-center gap-2 text-[#6b7280] text-[13px] py-10 justify-center">
+                <FaSpinner className="animate-spin" /> Loading posts...
+              </div>
+            )}
+
+            {loadError && (
+              <div className="bg-[#fdeaea] border border-[#f3a9a9] rounded-xl px-4 py-2.5 text-[12.5px] text-[#dc2626]">
+                {loadError}
+              </div>
+            )}
+
+            {!loading && activeTab === "feed" && (
 
               <>
 
-                <StoriesBar stories={feedStories} />
-
-                <CreatePostBox allLocations={ALL_LOCATIONS} onCreatePost={handleCreatePost} />
+                <StoriesBar stories={[]} />
 
                 <div className="bg-[#eef4ff] border border-[#dbe7ff] rounded-xl px-4 py-2.5 text-[12px] text-[#2563eb]">
-                  Showing posts &amp; stories only from locations you follow: <span className="font-semibold">{followedLocations.join(", ") || "none yet"}</span>
+                  Showing posts only from locations you follow: <span className="font-semibold">{followedLocations.join(", ") || "none yet"}</span>
+                  {" "}— want to post? Head to <a href="/share-experience" className="underline font-semibold">Share Experience</a>.
                 </div>
 
                 {feedPosts.length > 0 ? (
@@ -233,7 +196,7 @@ function Community() {
 
             )}
 
-            {activeTab === "explore" && (
+            {!loading && activeTab === "explore" && (
 
               <>
 

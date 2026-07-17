@@ -8,7 +8,7 @@ import {
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import { getLocationSummary } from "../../utils/locationSearch"
-import { getLocationDashboardData } from "../../utils/locationDashboardHelpers"
+import { getLocationDashboardData, fetchLocationPosts } from "../../utils/locationDashboardHelpers"
 
 const FALLBACK_IMAGE =
   "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=1200&auto=format&fit=crop"
@@ -75,8 +75,10 @@ function LocationDashboard() {
   const [summary, setSummary] = useState(null)
   const [loading, setLoading] = useState(true)
 
-  const { destinations, packages, offers, guides, posts, alerts, trips } =
-    getLocationDashboardData(locationName)
+  const { destinations, packages, offers, guides, alerts, trips } =
+  getLocationDashboardData(locationName)
+
+  const [posts, setPosts] = useState([])
 
   useEffect(() => {
 
@@ -88,6 +90,9 @@ function LocationDashboard() {
         setSummary(result)
         setLoading(false)
       }
+    })
+    fetchLocationPosts(locationName).then((result) => {
+        if (!cancelled) setPosts(result)
     })
 
     return () => { cancelled = true }
