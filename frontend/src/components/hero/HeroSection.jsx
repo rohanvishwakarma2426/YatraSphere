@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import heroBg from "../../assets/hero/hero-bg.jpg";
 import LocationAutocomplete from "./LocationAutocomplete";
+import ExperienceAutocomplete from "./ExperienceAutocomplete";
 
 function HeroSection() {
   const navigate = useNavigate();
@@ -16,8 +17,11 @@ function HeroSection() {
   };
 
   const handleLocationSelect = (place) => {
-    // place.name is the clean, real place name (e.g. "Manali") from Nominatim
     navigate(`/location/${encodeURIComponent(place.name)}`);
+  };
+
+  const handleExperienceSelect = (item) => {
+    navigate(`/experiences?q=${encodeURIComponent(item.name)}`);
   };
 
   const handleSearch = () => {
@@ -28,7 +32,6 @@ function HeroSection() {
 
     switch (activeTab) {
       case "destinations":
-        // No suggestion was clicked — fall back to whatever was typed.
         navigate(`/location/${encodeURIComponent(search.trim())}`);
         break;
 
@@ -67,22 +70,13 @@ function HeroSection() {
 
             <div className="flex items-center gap-2">
               {[
-                {
-                  id: "destinations",
-                  label: "Destinations",
-                },
-                {
-                  id: "experiences",
-                  label: "Experiences",
-                },
-                {
-                  id: "guides",
-                  label: "Guides",
-                },
+                { id: "destinations", label: "Destinations" },
+                { id: "experiences", label: "Experiences" },
+                { id: "guides", label: "Guides" },
               ].map((tab) => (
                 <button
                   key={tab.id}
-                  onClick={() => setActiveTab(tab.id)}
+                  onClick={() => { setActiveTab(tab.id); setSearch(""); }}
                   className={`px-4 h-[36px] rounded-xl text-[13px] transition-all duration-300
                     ${
                       activeTab === tab.id
@@ -99,7 +93,7 @@ function HeroSection() {
 
             <div className="mt-3 flex items-center gap-2">
 
-              {activeTab === "destinations" ? (
+              {activeTab === "destinations" && (
 
                 <LocationAutocomplete
                   value={search}
@@ -108,7 +102,20 @@ function HeroSection() {
                   placeholder={placeholders.destinations}
                 />
 
-              ) : (
+              )}
+
+              {activeTab === "experiences" && (
+
+                <ExperienceAutocomplete
+                  value={search}
+                  onChange={setSearch}
+                  onSelect={handleExperienceSelect}
+                  placeholder={placeholders.experiences}
+                />
+
+              )}
+
+              {activeTab === "guides" && (
 
                 <input
                   type="text"
@@ -117,7 +124,7 @@ function HeroSection() {
                   onKeyDown={(e) => {
                     if (e.key === "Enter") handleSearch();
                   }}
-                  placeholder={placeholders[activeTab]}
+                  placeholder={placeholders.guides}
                   className="flex-1 h-[42px] border border-[#ececec] rounded-xl px-4 outline-none focus:border-[#2563eb] text-[13px]"
                 />
 

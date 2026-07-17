@@ -1,59 +1,52 @@
-// Free, keyless location search + geocoding via OpenStreetMap's Nominatim.
-// Usage policy: max ~1 request/second, and it's polite to identify your app.
-// https://operations.osmfoundation.org/policies/nominatim/
+// Talks to our own FastAPI backend now (which handles Nominatim + Wikipedia
+// + PostgreSQL caching internally) instead of calling external APIs directly
+// from the browser.
 
-const NOMINATIM_BASE = "https://nominatim.openstreetmap.org"
+const API_BASE = "http://127.0.0.1:8000"
 
 export async function searchLocations(query, limit = 6) {
 
   const q = query.trim()
   if (!q) return []
 
-  const url = `${NOMINATIM_BASE}/search?q=${encodeURIComponent(q)}&format=jsonv2&addressdetails=1&limit=${limit}`
-
-  const res = await fetch(url, {
-    headers: {
-      // Nominatim asks apps to identify themselves — replace with your own domain/email if you have one.
-      "Accept-Language": "en",
-    },
-  })
-
-  if (!res.ok) return []
-
-  const data = await res.json()
-
-  return data.map((place) => ({
-    id: place.place_id,
-    name: place.display_name.split(",")[0],
-    fullAddress: place.display_name,
-    lat: place.lat,
-    lon: place.lon,
-    type: place.type,
-  }))
-
-}
-
-// Pulls a real photo + short description for a place from Wikipedia's free
-// summary API. Falls back gracefully if the place has no Wikipedia page.
-export async function getLocationSummary(name) {
+  const url = `${API_BASE}/api/search?q=${encodeURIComponent(q)}&type=destination`
 
   try {
 
-    const url = `https://en.wikipedia.org/api/rest_v1/page/summary/${encodeURIComponent(name)}`
     const res = await fetch(url)
-
-    if (!res.ok) return null
+    if (!res.ok) return []
 
     const data = await res.json()
 
-    return {
-      title: data.title,
-      description: data.extract,
-      image: data.thumbnail?.source || data.originalimage?.source || null,
-    }
+    return data.slice(0, limit).map((place) => ({
+      id: place.id,
+      name: place.city,
+      fullAddress: [place.city, place.state, place.country].filter(Boolean).join(", "),
+      lat: place.latitude,
+      lon: place.longitude,
+      image: place.image,
+      description: place.description,
+    }))
 
-  } catch {
-    return null
+  } catch (err) {
+    console.error("Location search failed:", err)
+    return []
+  }
+
+}
+
+export async function getLocationSummary(name) {
+
+  const results = await searchLocations(name, 1)
+
+  if (results.length === 0) return null
+
+  const place = results[0]
+
+  return {
+    title: place.name,
+    description: place.description,
+    image: place.image,
   }
 
 }
