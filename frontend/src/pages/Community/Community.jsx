@@ -40,7 +40,7 @@ function mapPost(p) {
     timeAgo: timeAgo(p.created_at),
     title: p.title,
     text: p.content,
-    images: [],
+    image: p.image_url || null,
     tags: [p.category],
     likes: p.likes_count,
     comments: 0,

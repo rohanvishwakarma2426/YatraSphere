@@ -40,7 +40,8 @@ function ShareExperience() {
   const [submitting, setSubmitting] = useState(false)
 
   const handleFileSelect = (e) => {
-    const picked = Array.from(e.target.files || []).slice(0, 5)
+    // Only one image is supported for now — take the first file picked.
+    const picked = Array.from(e.target.files || []).slice(0, 1)
     setFiles(picked)
   }
 
@@ -60,12 +61,28 @@ function ShareExperience() {
 
     try {
 
+      let imageUrl = null
+
+      if (files.length > 0) {
+
+        const formData = new FormData()
+        formData.append("file", files[0])
+
+        const uploadRes = await axios.post("http://127.0.0.1:8000/upload", formData, {
+          headers: { "Content-Type": "multipart/form-data" },
+        })
+
+        imageUrl = uploadRes.data.image_url
+
+      }
+
       await axios.post("http://127.0.0.1:8000/posts", {
         user_id: user.id,
         title: title.trim(),
         content: story.trim(),
         location: location.trim(),
         category,
+        image_url: imageUrl,
       })
 
       alert("Your experience has been published!")

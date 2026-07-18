@@ -55,33 +55,17 @@ function PostCard({ post }) {
         {post.text}
       </p>
 
-      {/* IMAGES */}
+      {/* IMAGE */}
 
-      {post.images && post.images.length > 0 && (
+      {post.image && (
 
-        <div className="mt-3 grid grid-cols-2 gap-2 rounded-xl overflow-hidden">
+        <div className="mt-3 rounded-xl overflow-hidden">
 
-          {post.images.slice(0, 4).map((img, i) => (
-
-            <div key={i} className="relative">
-
-              <img
-                src={img}
-                alt="post"
-                className={`w-full object-cover ${
-                  post.images.length === 1 ? "h-[280px] col-span-2" : "h-[140px]"
-                }`}
-              />
-
-              {i === 3 && post.images.length > 4 && (
-                <div className="absolute inset-0 bg-black/50 flex items-center justify-center text-white text-[18px] font-bold">
-                  +{post.images.length - 4}
-                </div>
-              )}
-
-            </div>
-
-          ))}
+          <img
+            src={post.image}
+            alt={post.title || "post"}
+            className="w-full h-[280px] object-cover"
+          />
 
         </div>
 
