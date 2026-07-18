@@ -1,5 +1,6 @@
 import { useState, useEffect, useMemo } from "react"
 import axios from "axios"
+import { Link } from "react-router-dom"
 import { FaSearch, FaMapMarkerAlt, FaTimes, FaSpinner } from "react-icons/fa"
 
 import Navbar from "../../components/navbar/Navbar"
@@ -7,13 +8,10 @@ import Sidebar from "../../components/sidebar/Sidebar"
 import StoriesBar from "../../components/community/StoriesBar"
 import PostCard from "../../components/community/PostCard"
 import CommunitySidebar from "../../components/community/CommunitySidebar"
+import { useAuth } from "../../hooks/useAuth"
 
-export const ALL_LOCATIONS = [
-  "Manali", "Kasol", "Goa", "Leh Ladakh", "Varanasi",
-  "Jaipur", "Rishikesh", "Udaipur", "Spiti Valley",
-]
-
-const INITIAL_FOLLOWED = ["Manali", "Kasol", "Goa"]
+// No hardcoded locations or seed-follows — everything below is derived
+// from real posts fetched from the backend.
 
 const DEFAULT_AVATAR =
   "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop"
@@ -35,8 +33,10 @@ function mapPost(p) {
   return {
     id: p.id,
     author: p.author?.name || "Traveler",
+    authorId: p.author?.id ?? null,
     avatar: DEFAULT_AVATAR,
     location: p.location || "Unknown",
+    createdAt: p.created_at,
     timeAgo: timeAgo(p.created_at),
     title: p.title,
     text: p.content,
@@ -50,7 +50,9 @@ function mapPost(p) {
 
 function Community() {
 
-  const [followedLocations, setFollowedLocations] = useState(INITIAL_FOLLOWED)
+  const { user } = useAuth()
+
+  const [followedLocations, setFollowedLocations] = useState([])
   const [posts, setPosts] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState("")
@@ -89,6 +91,12 @@ function Community() {
     )
   }
 
+  // Used when picking a location from the sidebar's search — always adds,
+  // never toggles off, so re-selecting the same suggestion doesn't unfollow.
+  const followLocation = (location) => {
+    setFollowedLocations((prev) => (prev.includes(location) ? prev : [...prev, location]))
+  }
+
   // Case-insensitive, partial match — "manali" or "Manali, HP" both match
   // a followed "Manali", instead of requiring an exact string match.
   const isLocationFollowed = (postLocation) => {
@@ -104,6 +112,16 @@ function Community() {
     [posts, followedLocations]
   )
 
+  // SCAM ALERTS — scam-category posts, but only from locations you follow.
+  // This is what powers the sidebar's alerts card.
+  const scamAlerts = useMemo(
+    () =>
+      posts
+        .filter((p) => p.tags?.[0] === "scam" && isLocationFollowed(p.location))
+        .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt)),
+    [posts, followedLocations]
+  )
+
   // EXPLORE TAB: requires a search query, shows posts matching that location
   const exploreResults = useMemo(() => {
     if (!searchQuery.trim()) return []
@@ -111,11 +129,27 @@ function Community() {
     return posts.filter((p) => p.location.toLowerCase().includes(q))
   }, [posts, searchQuery])
 
+  // Locations actually seen in real posts, plus anything the user has
+  // followed via the sidebar search — no hardcoded dummy entries.
+  // Deduped case-insensitively so "goa" and "Goa" show up as one entry.
+  const knownLocations = useMemo(() => {
+    const raw = [
+      ...posts.map((p) => p.location).filter((l) => l && l !== "Unknown"),
+      ...followedLocations,
+    ]
+    const seen = new Map()
+    for (const loc of raw) {
+      const key = loc.trim().toLowerCase()
+      if (key && !seen.has(key)) seen.set(key, loc.trim())
+    }
+    return Array.from(seen.values()).sort((a, b) => a.localeCompare(b))
+  }, [posts, followedLocations])
+
   const matchedLocations = useMemo(() => {
     if (!searchQuery.trim()) return []
     const q = searchQuery.trim().toLowerCase()
-    return ALL_LOCATIONS.filter((l) => l.toLowerCase().includes(q))
-  }, [searchQuery])
+    return knownLocations.filter((l) => l.toLowerCase().includes(q))
+  }, [searchQuery, knownLocations])
 
   return (
 
@@ -224,9 +258,9 @@ function Community() {
 
                   </div>
 
-                  {!searchQuery && (
+                  {!searchQuery && knownLocations.length > 0 && (
                     <div className="mt-3 flex flex-wrap gap-2">
-                      {ALL_LOCATIONS.map((loc) => (
+                      {knownLocations.map((loc) => (
                         <button
                           key={loc}
                           onClick={() => setSearchQuery(loc)}
@@ -255,7 +289,9 @@ function Community() {
                         className="flex items-center gap-2 bg-white border border-[#ececec] rounded-full pl-3 pr-1.5 h-[34px]"
                       >
                         <FaMapMarkerAlt className="text-[11px] text-[#2563eb]" />
-                        <span className="text-[12px] text-[#111827]">{loc}</span>
+                        <Link to={`/location/${encodeURIComponent(loc)}`} className="text-[12px] text-[#111827] hover:text-[#2563eb] hover:underline transition">
+                          {loc}
+                        </Link>
                         <button
                           onClick={() => toggleFollow(loc)}
                           className={`text-[10.5px] font-semibold px-2.5 h-[24px] rounded-full transition ${
@@ -289,9 +325,13 @@ function Community() {
           {/* RIGHT SIDEBAR */}
 
           <CommunitySidebar
-            allLocations={ALL_LOCATIONS}
+            allLocations={followedLocations}
             followedLocations={followedLocations}
             onToggleFollow={toggleFollow}
+            onFollowLocation={followLocation}
+            posts={posts}
+            scamAlerts={scamAlerts}
+            currentUserId={user?.id ?? null}
           />
 
         </div>

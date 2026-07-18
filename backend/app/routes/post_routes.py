@@ -32,6 +32,7 @@ def create_post(post: PostCreate, db: Session = Depends(get_db)):
         content=post.content,
         location=post.location,
         category=post.category,
+        image_url=post.image_url,
     )
 
     db.add(new_post)

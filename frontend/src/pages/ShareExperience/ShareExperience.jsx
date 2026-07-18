@@ -2,7 +2,7 @@ import { useState } from "react"
 import axios from "axios"
 import { useNavigate } from "react-router-dom"
 import {
-  FaMapMarkerAlt, FaLocationArrow, FaLightbulb, FaExclamationTriangle,
+  FaMapMarkerAlt, FaLightbulb, FaExclamationTriangle,
   FaCommentDots, FaStickyNote, FaEllipsisH, FaCloudUploadAlt,
   FaBold, FaItalic, FaListUl, FaQuoteRight, FaLink, FaImage,
 } from "react-icons/fa"
@@ -10,8 +10,11 @@ import {
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import ShareExperienceRightSidebar from "../../components/shareExperience/ShareExperienceRightSidebar"
+import LocationAutocomplete from "../../components/hero/LocationAutocomplete"
 import { useAuth } from "../../hooks/useAuth"
 import { GUIDE_CATEGORIES } from "../../utils/guideHelpers"
+import { EXPERIENCE_TAGS } from "../../utils/experienceTags"
+import { createExperience } from "../../utils/experienceSearch"
 
 const CATEGORIES = [
   { key: "awareness", label: "Awareness", desc: "Share helpful info & awareness", icon: FaLightbulb, bg: "bg-[#eaf1ff]", color: "text-[#2563eb]" },
@@ -35,6 +38,7 @@ function ShareExperience() {
   const [location, setLocation] = useState("")
   const [category, setCategory] = useState("awareness")
   const [title, setTitle] = useState("")
+  const [experienceTag, setExperienceTag] = useState(null)
   const [story, setStory] = useState("")
   const [files, setFiles] = useState([])
   const [submitting, setSubmitting] = useState(false)
@@ -85,11 +89,26 @@ function ShareExperience() {
         image_url: imageUrl,
       })
 
+      // If the user picked an experience tag, also save it to the
+      // Experience table — this is the "search engine module" DB: the
+      // Hero section's Experience search checks this table first and
+      // only calls out elsewhere if nothing is found there.
+      if (experienceTag) {
+        createExperience({
+          title: title.trim(),
+          destination: location.trim(),
+          category: experienceTag,
+          description: story.trim(),
+          author: user.name || "Anonymous",
+        }).catch((err) => console.error("Could not save experience tag:", err))
+      }
+
       alert("Your experience has been published!")
 
       setLocation("")
       setCategory("awareness")
       setTitle("")
+      setExperienceTag(null)
       setStory("")
       setFiles([])
 
@@ -134,17 +153,14 @@ function ShareExperience() {
                 <h2 className="text-[14px] font-bold text-[#111827]">1. Add Location</h2>
                 <p className="text-[12px] text-[#6b7280] mt-0.5 mb-2.5">Where was your experience?</p>
 
-                <div className="relative">
-                  <FaMapMarkerAlt className="absolute left-3.5 top-1/2 -translate-y-1/2 text-[13px] text-[#9ca3af]" />
-                  <input
+                <div className="flex items-center gap-2">
+                  <FaMapMarkerAlt className="text-[13px] text-[#9ca3af] shrink-0" />
+                  <LocationAutocomplete
                     value={location}
-                    onChange={(e) => setLocation(e.target.value)}
+                    onChange={setLocation}
+                    onSelect={(place) => setLocation(place.name)}
                     placeholder="Search and select a location"
-                    className="w-full h-[46px] border border-[#ececec] rounded-xl pl-10 pr-10 outline-none text-[13px] focus:border-[#2563eb]"
                   />
-                  <button type="button" className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[#2563eb]">
-                    <FaLocationArrow className="text-[13px]" />
-                  </button>
                 </div>
               </div>
 
@@ -190,6 +206,26 @@ function ShareExperience() {
                   <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10.5px] text-[#9ca3af]">
                     {title.length}/{TITLE_LIMIT}
                   </span>
+                </div>
+
+                <p className="text-[11.5px] text-[#6b7280] mt-3 mb-1.5">
+                  Tag the kind of experience this is (optional) — this makes it findable in Experience search
+                </p>
+                <div className="flex flex-wrap gap-2">
+                  {EXPERIENCE_TAGS.map((tag) => (
+                    <button
+                      key={tag}
+                      type="button"
+                      onClick={() => setExperienceTag((prev) => (prev === tag ? null : tag))}
+                      className={`text-[11.5px] px-3 h-[28px] rounded-full border transition ${
+                        experienceTag === tag
+                          ? "bg-[#2563eb] border-[#2563eb] text-white"
+                          : "bg-white border-[#ececec] text-[#4b5563] hover:bg-[#f5f7fb]"
+                      }`}
+                    >
+                      {tag}
+                    </button>
+                  ))}
                 </div>
               </div>
 

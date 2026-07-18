@@ -1,4 +1,5 @@
 import { useState } from "react"
+import { Link } from "react-router-dom"
 import { FaHeart, FaRegHeart, FaRegComment, FaShare, FaRegBookmark, FaMapMarkerAlt } from "react-icons/fa"
 
 function PostCard({ post }) {
@@ -35,7 +36,9 @@ function PostCard({ post }) {
               <span>{post.timeAgo}</span>
               <span>·</span>
               <FaMapMarkerAlt className="text-[10px]" />
-              <span>{post.location}</span>
+              <Link to={`/location/${encodeURIComponent(post.location)}`} className="hover:text-[#2563eb] hover:underline transition">
+                {post.location}
+              </Link>
             </div>
           </div>
 
