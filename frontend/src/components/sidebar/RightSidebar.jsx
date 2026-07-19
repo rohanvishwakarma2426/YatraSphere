@@ -1,4 +1,5 @@
 import { FaExclamationTriangle, FaHeart, FaRegComment, FaShare } from "react-icons/fa"
+import TrendingTopics from "../sections/TrendingTopics"
 
 const scamAlerts = [
   { title: "Manali Taxi Overcharging", desc: "Be aware of fixed price scams...", time: "New", isNew: true },

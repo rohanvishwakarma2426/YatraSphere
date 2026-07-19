@@ -2,8 +2,7 @@ import { useState, useEffect } from "react"
 import axios from "axios"
 import { FaFire } from "react-icons/fa"
 import { getCategoryLabel } from "../../utils/postCategories"
-import { FaExclamationTriangle, FaHeart, FaRegComment, FaShare } from "react-icons/fa"
-import TrendingTopics from "../sections/TrendingTopics"
+
 // Real trending topics — grouped from actual posts by category, most
 // discussed first. No hardcoded/dummy topics.
 function TrendingTopics() {
