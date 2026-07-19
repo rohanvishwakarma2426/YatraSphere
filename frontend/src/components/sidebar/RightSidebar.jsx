@@ -12,7 +12,12 @@ function RightSidebar() {
 
     <div className="w-full xl:w-[300px] xl:shrink-0 flex flex-col gap-4">
 
+      {/* TRENDING TOPICS — real, from live posts */}
+
+      <TrendingTopics />
+
       {/* SCAM ALERTS */}
+
 
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
 

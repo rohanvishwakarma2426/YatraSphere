@@ -42,6 +42,31 @@ def create_post(post: PostCreate, db: Session = Depends(get_db)):
     return new_post
 
 
+# ================= KNOWN LOCATIONS =================
+# Every distinct location that's actually been posted under — powers the
+# location suggestions on both the Community sidebar and Share Experience,
+# so suggestions always come from real data, not a hardcoded list.
+
+@router.get("/locations", response_model=list[str])
+def list_known_locations(db: Session = Depends(get_db)):
+
+    rows = (
+        db.query(Post.location)
+        .filter(Post.location.isnot(None), Post.location != "")
+        .distinct()
+        .all()
+    )
+
+    # De-dupe case-insensitively too ("goa" / "Goa") and sort.
+    seen = {}
+    for (loc,) in rows:
+        key = loc.strip().lower()
+        if key and key not in seen:
+            seen[key] = loc.strip()
+
+    return sorted(seen.values(), key=str.lower)
+
+
 # ================= COMMUNITY FEED =================
 
 @router.get("/posts", response_model=list[PostOut])

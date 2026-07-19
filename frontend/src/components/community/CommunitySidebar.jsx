@@ -1,82 +1,63 @@
-import { useState, useEffect, useRef, useMemo } from "react"
+import { useState, useMemo } from "react"
 import { Link } from "react-router-dom"
-import { FaExclamationTriangle, FaSearch, FaSpinner, FaMapMarkerAlt } from "react-icons/fa"
-import { searchLocations } from "../../utils/locationSearch"
+import { FaExclamationTriangle, FaMapMarkerAlt, FaPlus } from "react-icons/fa"
 
 function CommunitySidebar({
   allLocations,
+  suggestLocations,
   followedLocations,
   onToggleFollow,
   onFollowLocation,
   posts,
+  allUsers,
+  followedPeople,
+  onTogglePersonFollow,
   scamAlerts,
   currentUserId,
 }) {
 
   const [query, setQuery] = useState("")
-  const [suggestions, setSuggestions] = useState([])
-  const [searching, setSearching] = useState(false)
-  const [open, setOpen] = useState(false)
-  const debounceRef = useRef(null)
+  const [showSuggestions, setShowSuggestions] = useState(false)
 
-  // People whose "Follow" you've clicked in this session (client-side only
-  // — there's no user-follow table on the backend yet, so this doesn't
-  // persist across a refresh. It just makes the button actually respond).
-  const [followedPeople, setFollowedPeople] = useState(() => new Set())
+  // Suggestions pulled straight from real posted locations in our own DB
+  // (not an external geocoding API) — so typing "azm" surfaces "Azamgarh".
+  const suggestions = useMemo(() => {
+    const q = query.trim().toLowerCase()
+    if (!q) return []
+    return (suggestLocations || [])
+      .filter((loc) => loc.toLowerCase().includes(q) && !followedLocations.includes(loc))
+      .slice(0, 6)
+  }, [query, suggestLocations, followedLocations])
 
-  const togglePersonFollow = (id) => {
-    setFollowedPeople((prev) => {
-      const next = new Set(prev)
-      if (next.has(id)) next.delete(id)
-      else next.add(id)
-      return next
-    })
-  }
-
-  // Search-to-follow — hits the same real /api/search location API used
-  // on Share Experience, debounced so we don't fire on every keystroke.
-  useEffect(() => {
-
-    clearTimeout(debounceRef.current)
-
-    if (!query.trim()) {
-      setSuggestions([])
-      return
-    }
-
-    setSearching(true)
-
-    debounceRef.current = setTimeout(async () => {
-      const results = await searchLocations(query)
-      setSuggestions(results)
-      setSearching(false)
-    }, 400)
-
-    return () => clearTimeout(debounceRef.current)
-
-  }, [query])
-
-  const handlePick = (place) => {
-    onFollowLocation(place.name)
+  const pickSuggestion = (loc) => {
+    onFollowLocation(loc)
     setQuery("")
-    setSuggestions([])
-    setOpen(false)
+    setShowSuggestions(false)
   }
 
-  // PEOPLE YOU MAY KNOW — real travelers who've actually posted, excluding
-  // yourself, ranked by how many posts they've shared.
+  // Enter / the + button follows exactly what's typed, in case it isn't
+  // in the suggestions (e.g. a brand new location nobody's posted yet).
+  const handleFollowTyped = (e) => {
+    e.preventDefault()
+    const name = query.trim()
+    if (!name) return
+    onFollowLocation(name)
+    setQuery("")
+    setShowSuggestions(false)
+  }
+
+  // PEOPLE YOU MAY KNOW — every real signed-up user (not just ones who've
+  // posted), excluding yourself, with their real post count if any.
   const people = useMemo(() => {
-    const byAuthor = new Map()
+    const counts = {}
     for (const p of posts || []) {
-      if (!p.authorId || p.authorId === currentUserId) continue
-      const existing = byAuthor.get(p.authorId)
-      if (existing) existing.count += 1
-      else byAuthor.set(p.authorId, { id: p.authorId, name: p.author, count: 1 })
+      if (p.authorId) counts[p.authorId] = (counts[p.authorId] || 0) + 1
     }
-    return Array.from(byAuthor.values())
+    return (allUsers || [])
+      .filter((u) => u.id !== currentUserId)
+      .map((u) => ({ id: u.id, name: u.name, count: counts[u.id] || 0 }))
       .sort((a, b) => b.count - a.count)
-      .slice(0, 5)
-  }, [posts, currentUserId])
+  }, [allUsers, posts, currentUserId])
 
   return (
 
@@ -142,56 +123,52 @@ function CommunitySidebar({
           </span>
         </div>
 
-        {/* SEARCH A LOCATION TO FOLLOW — real API, not a hardcoded list */}
+        {/* Type a location — suggestions come from real posted locations
+            in our own DB, no external API. Picking one follows the full,
+            correct name; hitting Enter follows exactly what you typed. */}
 
         <div className="relative mb-3.5">
 
-          <div className="flex items-center gap-2 bg-[#f5f7fb] rounded-lg px-3 h-[36px]">
-            <FaSearch className="text-[#9ca3af] text-[11px]" />
+          <form onSubmit={handleFollowTyped} className="flex items-center gap-2">
             <input
               value={query}
-              onChange={(e) => { setQuery(e.target.value); setOpen(true) }}
-              onFocus={() => setOpen(true)}
-              onBlur={() => setTimeout(() => setOpen(false), 150)}
-              placeholder="Search a location to follow"
-              className="flex-1 bg-transparent outline-none text-[12px] text-[#111827] placeholder:text-[#9ca3af]"
+              onChange={(e) => { setQuery(e.target.value); setShowSuggestions(true) }}
+              onFocus={() => setShowSuggestions(true)}
+              onBlur={() => setTimeout(() => setShowSuggestions(false), 150)}
+              placeholder="Type a location to follow"
+              className="flex-1 bg-[#f5f7fb] rounded-lg px-3 h-[36px] outline-none text-[12px] text-[#111827] placeholder:text-[#9ca3af]"
             />
-          </div>
+            <button
+              type="submit"
+              disabled={!query.trim()}
+              className="shrink-0 w-[36px] h-[36px] rounded-lg bg-[#2563eb] disabled:opacity-40 disabled:cursor-not-allowed text-white flex items-center justify-center hover:bg-[#1d4ed8] transition"
+            >
+              <FaPlus className="text-[12px]" />
+            </button>
+          </form>
 
-          {open && query.trim() && (
+          {showSuggestions && suggestions.length > 0 && (
 
-            <div className="absolute top-[40px] left-0 w-full bg-white rounded-xl border border-[#ececec] shadow-lg z-30 max-h-[220px] overflow-y-auto py-1">
-
-              {searching ? (
-                <div className="flex items-center gap-2 px-3 py-2.5 text-[12px] text-[#9ca3af]">
-                  <FaSpinner className="animate-spin text-[11px]" /> Searching...
-                </div>
-              ) : suggestions.length > 0 ? (
-                suggestions.map((place) => (
-                  <button
-                    key={place.id}
-                    onMouseDown={() => handlePick(place)}
-                    className="w-full flex items-start gap-2 px-3 py-2 text-left hover:bg-[#f5f7fb] transition"
-                  >
-                    <FaMapMarkerAlt className="text-[#2563eb] text-[11px] mt-0.5 shrink-0" />
-                    <div className="min-w-0">
-                      <p className="text-[12px] font-medium text-[#111827] truncate">{place.name}</p>
-                      <p className="text-[10.5px] text-[#9ca3af] truncate">{place.fullAddress}</p>
-                    </div>
-                  </button>
-                ))
-              ) : (
-                <p className="px-3 py-2.5 text-[12px] text-[#9ca3af]">No locations found for "{query}"</p>
-              )}
-
+            <div className="absolute top-[40px] left-0 right-0 bg-white rounded-xl border border-[#ececec] shadow-lg z-30 max-h-[200px] overflow-y-auto py-1">
+              {suggestions.map((loc) => (
+                <button
+                  key={loc}
+                  type="button"
+                  onMouseDown={() => pickSuggestion(loc)}
+                  className="w-full flex items-center gap-2 px-3 py-2 text-left hover:bg-[#f5f7fb] transition"
+                >
+                  <FaMapMarkerAlt className="text-[#2563eb] text-[11px] shrink-0" />
+                  <span className="text-[12px] font-medium text-[#111827] truncate">{loc}</span>
+                </button>
+              ))}
             </div>
 
           )}
 
         </div>
 
-        {/* This list is ONLY what you've personally followed via the
-            search above — not every location that shows up in the feed. */}
+        {/* This list is ONLY what you've personally followed — not every
+            location that shows up in the feed. */}
 
         {allLocations.length > 0 ? (
 
@@ -253,7 +230,7 @@ function CommunitySidebar({
 
             {people.map((person) => {
 
-              const isFollowing = followedPeople.has(person.id)
+              const isFollowing = followedPeople.includes(person.id)
 
               return (
 
@@ -277,7 +254,7 @@ function CommunitySidebar({
                   </div>
 
                   <button
-                    onClick={() => togglePersonFollow(person.id)}
+                    onClick={() => onTogglePersonFollow(person.id)}
                     className={`shrink-0 text-[11px] font-semibold px-3 h-[26px] rounded-lg border transition ${
                       isFollowing
                         ? "bg-[#f3f4f6] border-[#ececec] text-[#4b5563] hover:bg-[#e5e7eb]"
@@ -296,7 +273,7 @@ function CommunitySidebar({
           </div>
 
         ) : (
-          <p className="text-[12px] text-[#9ca3af]">No other travelers have posted yet.</p>
+          <p className="text-[12px] text-[#9ca3af]">No other travelers have signed up yet.</p>
         )}
 
       </div>

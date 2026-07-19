@@ -1,9 +1,10 @@
 from fastapi import APIRouter, Depends, HTTPException
 from sqlalchemy.orm import Session
+from typing import List
 
 from app.database.connection import get_db
 from app.models.user_model import User
-from app.schemas.user_schema import UserRegister, UserLogin
+from app.schemas.user_schema import UserRegister, UserLogin, UserOut
 from app.utils.security import hash_password, verify_password
 
 router = APIRouter()
@@ -63,3 +64,12 @@ def login(user: UserLogin, db: Session = Depends(get_db)):
             "email": existing_user.email,
         },
     }
+
+
+# ================= LIST USERS =================
+# Powers "People You May Know" on Community — every real signed-up user,
+# not just the ones who happen to have posted already.
+
+@router.get("/users", response_model=List[UserOut])
+def list_users(db: Session = Depends(get_db)):
+    return db.query(User).all()

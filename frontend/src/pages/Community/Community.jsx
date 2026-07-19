@@ -10,8 +10,20 @@ import PostCard from "../../components/community/PostCard"
 import CommunitySidebar from "../../components/community/CommunitySidebar"
 import { useAuth } from "../../hooks/useAuth"
 
-// No hardcoded locations or seed-follows — everything below is derived
-// from real posts fetched from the backend.
+const FOLLOWED_LOCATIONS_KEY = "ys_followed_locations"
+const FOLLOWED_PEOPLE_KEY = "ys_followed_people"
+
+// Reads a JSON array out of localStorage, falling back to [] on any
+// error (first visit, corrupted value, private browsing, etc).
+function loadStoredList(key) {
+  try {
+    const raw = localStorage.getItem(key)
+    const parsed = raw ? JSON.parse(raw) : []
+    return Array.isArray(parsed) ? parsed : []
+  } catch {
+    return []
+  }
+}
 
 const DEFAULT_AVATAR =
   "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop"
@@ -52,12 +64,24 @@ function Community() {
 
   const { user } = useAuth()
 
-  const [followedLocations, setFollowedLocations] = useState([])
+  const [followedLocations, setFollowedLocations] = useState(() => loadStoredList(FOLLOWED_LOCATIONS_KEY))
+  const [followedPeople, setFollowedPeople] = useState(() => loadStoredList(FOLLOWED_PEOPLE_KEY))
   const [posts, setPosts] = useState([])
+  const [allUsers, setAllUsers] = useState([])
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState("")
   const [activeTab, setActiveTab] = useState("feed") // "feed" | "explore"
   const [searchQuery, setSearchQuery] = useState("")
+
+  // Keep follows across refreshes — they stay exactly as they are until
+  // you unfollow, instead of resetting every time the page reloads.
+  useEffect(() => {
+    localStorage.setItem(FOLLOWED_LOCATIONS_KEY, JSON.stringify(followedLocations))
+  }, [followedLocations])
+
+  useEffect(() => {
+    localStorage.setItem(FOLLOWED_PEOPLE_KEY, JSON.stringify(followedPeople))
+  }, [followedPeople])
 
   useEffect(() => {
 
@@ -79,6 +103,12 @@ function Community() {
         if (!cancelled) setLoading(false)
       })
 
+    // People You May Know should show every real signed-up user, not
+    // just the ones who happen to have posted already.
+    axios.get("http://127.0.0.1:8000/users")
+      .then((res) => { if (!cancelled) setAllUsers(res.data) })
+      .catch((err) => console.error("Failed to load users:", err))
+
     return () => { cancelled = true }
 
   }, [])
@@ -97,6 +127,14 @@ function Community() {
     setFollowedLocations((prev) => (prev.includes(location) ? prev : [...prev, location]))
   }
 
+  const togglePersonFollow = (personId) => {
+    setFollowedPeople((prev) =>
+      prev.includes(personId)
+        ? prev.filter((id) => id !== personId)
+        : [...prev, personId]
+    )
+  }
+
   // Case-insensitive, partial match — "manali" or "Manali, HP" both match
   // a followed "Manali", instead of requiring an exact string match.
   const isLocationFollowed = (postLocation) => {
@@ -107,9 +145,10 @@ function Community() {
     )
   }
 
+  // Feed = posts from locations you follow OR from people you follow.
   const feedPosts = useMemo(
-    () => posts.filter((p) => isLocationFollowed(p.location)),
-    [posts, followedLocations]
+    () => posts.filter((p) => isLocationFollowed(p.location) || followedPeople.includes(p.authorId)),
+    [posts, followedLocations, followedPeople]
   )
 
   // SCAM ALERTS — scam-category posts, but only from locations you follow.
@@ -214,7 +253,7 @@ function Community() {
                 <StoriesBar stories={[]} />
 
                 <div className="bg-[#eef4ff] border border-[#dbe7ff] rounded-xl px-4 py-2.5 text-[12px] text-[#2563eb]">
-                  Showing posts only from locations you follow: <span className="font-semibold">{followedLocations.join(", ") || "none yet"}</span>
+                  Showing posts from locations and people you follow: <span className="font-semibold">{followedLocations.join(", ") || "no locations"}</span>
                   {" "}— want to post? Head to <a href="/share-experience" className="underline font-semibold">Share Experience</a>.
                 </div>
 
@@ -222,7 +261,7 @@ function Community() {
                   feedPosts.map((post) => <PostCard key={post.id} post={post} />)
                 ) : (
                   <div className="bg-white rounded-2xl border border-[#ececec] p-8 text-center text-[#6b7280] text-[13px]">
-                    You're not following any locations with posts yet. Go to Explore to find and follow locations.
+                    You're not following any locations or people with posts yet. Go to Explore, or follow someone from the sidebar.
                   </div>
                 )}
 
@@ -326,10 +365,14 @@ function Community() {
 
           <CommunitySidebar
             allLocations={followedLocations}
+            suggestLocations={knownLocations}
             followedLocations={followedLocations}
             onToggleFollow={toggleFollow}
             onFollowLocation={followLocation}
             posts={posts}
+            allUsers={allUsers}
+            followedPeople={followedPeople}
+            onTogglePersonFollow={togglePersonFollow}
             scamAlerts={scamAlerts}
             currentUserId={user?.id ?? null}
           />
