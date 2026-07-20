@@ -6,15 +6,18 @@ from sqlalchemy import or_
 from app.database.connection import get_db
 from app.models.post_model import Post
 from app.models.user_model import User
-from app.schemas.post_schema import PostCreate, PostOut, GUIDE_CATEGORIES, ALL_CATEGORIES
+from app.schemas.post_schema import (
+    PostCreate, PostOut, GUIDE_CATEGORIES, EXPERIENCE_CATEGORIES, ALL_CATEGORIES,
+)
 
 router = APIRouter()
 
 
 # ================= CREATE POST =================
 # Used by the "Share Experience" form. If the post's category is one of the
-# guide categories, it automatically becomes searchable via /api/guides/search
-# — guides are just community posts, there's no separate guides table.
+# guide or experience categories, it automatically becomes searchable via
+# /api/guides/search or /api/experience/search — they're just normal
+# community posts under the hood, there's no separate table for either.
 
 @router.post("/posts", response_model=PostOut)
 def create_post(post: PostCreate, db: Session = Depends(get_db)):
@@ -43,9 +46,6 @@ def create_post(post: PostCreate, db: Session = Depends(get_db)):
 
 
 # ================= KNOWN LOCATIONS =================
-# Every distinct location that's actually been posted under — powers the
-# location suggestions on both the Community sidebar and Share Experience,
-# so suggestions always come from real data, not a hardcoded list.
 
 @router.get("/locations", response_model=list[str])
 def list_known_locations(db: Session = Depends(get_db)):
@@ -57,7 +57,6 @@ def list_known_locations(db: Session = Depends(get_db)):
         .all()
     )
 
-    # De-dupe case-insensitively too ("goa" / "Goa") and sort.
     seen = {}
     for (loc,) in rows:
         key = loc.strip().lower()
@@ -84,8 +83,6 @@ def list_posts(
 
 # ================= GUIDE SEARCH =================
 # GET /api/guides/search?q=Goa&category=budget_guide
-# Only ever searches within the guide categories — general community posts
-# (awareness/scam/thoughts/tips/other) never show up here.
 
 @router.get("/api/guides/search", response_model=list[PostOut])
 def search_guides(
@@ -112,6 +109,48 @@ def search_guides(
                 Post.title.ilike(like),
                 Post.content.ilike(like),
                 Post.location.ilike(like),
+                Post.category.ilike(like),
+            )
+        )
+
+    return query.order_by(Post.created_at.desc()).all()
+
+
+# ================= EXPERIENCE SEARCH =================
+
+
+# ================= EXPERIENCE SEARCH =================
+# GET /api/experience/search?q=camping&category=camping
+# Same pattern as Guide Search — only ever searches within the experience
+# categories (camping, trekking, nightlife, cafes, river_rafting,
+# solo_trips, hidden_gems). General community/guide posts never show up here.
+
+@router.get("/api/experience/search", response_model=list[PostOut])
+def search_experiences(
+    q: Optional[str] = Query(None, description="Search text (matches title, content or location)"),
+    category: Optional[str] = Query(None, description="One of: " + ", ".join(sorted(EXPERIENCE_CATEGORIES))),
+    db: Session = Depends(get_db),
+):
+
+    if category and category not in EXPERIENCE_CATEGORIES:
+        raise HTTPException(
+            status_code=400,
+            detail=f"Invalid experience category. Must be one of: {', '.join(sorted(EXPERIENCE_CATEGORIES))}",
+        )
+
+    query = db.query(Post).filter(Post.category.in_(EXPERIENCE_CATEGORIES))
+
+    if category:
+        query = query.filter(Post.category == category)
+
+    if q:
+        like = f"%{q}%"
+        query = query.filter(
+            or_(
+                Post.title.ilike(like),
+                Post.content.ilike(like),
+                Post.location.ilike(like),
+                Post.category.ilike(like),
             )
         )
 

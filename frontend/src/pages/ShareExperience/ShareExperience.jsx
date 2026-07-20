@@ -13,8 +13,7 @@ import ShareExperienceRightSidebar from "../../components/shareExperience/ShareE
 import LocationAutocomplete from "../../components/hero/LocationAutocomplete"
 import { useAuth } from "../../hooks/useAuth"
 import { GUIDE_CATEGORIES } from "../../utils/guideHelpers"
-import { EXPERIENCE_TAGS } from "../../utils/experienceTags"
-import { createExperience } from "../../utils/experienceSearch"
+import { EXPERIENCE_CATEGORIES } from "../../utils/experienceHelpers"
 
 const CATEGORIES = [
   { key: "awareness", label: "Awareness", desc: "Share helpful info & awareness", icon: FaLightbulb, bg: "bg-[#eaf1ff]", color: "text-[#2563eb]" },
@@ -24,6 +23,9 @@ const CATEGORIES = [
   // Guide categories — posting under any of these also makes the post
   // show up in Guide Search (Blogs & Guides page).
   ...GUIDE_CATEGORIES,
+  // Experience categories — posting under any of these also makes the post
+  // show up in Experience Search (Hero section's "Experiences" tab).
+  ...EXPERIENCE_CATEGORIES,
   { key: "other", label: "Other", desc: "Other experiences & stories", icon: FaEllipsisH, bg: "bg-[#f3f4f6]", color: "text-[#6b7280]" },
 ]
 
@@ -37,8 +39,6 @@ function ShareExperience() {
 
   const [location, setLocation] = useState("")
   const [category, setCategory] = useState("awareness")
-  const [title, setTitle] = useState("")
-  const [experienceTag, setExperienceTag] = useState(null)
   const [story, setStory] = useState("")
   const [files, setFiles] = useState([])
   const [submitting, setSubmitting] = useState(false)
@@ -49,7 +49,14 @@ function ShareExperience() {
     setFiles(picked)
   }
 
-  const isValid = location.trim() && title.trim() && story.trim()
+  const isValid = location.trim() && story.trim()
+
+  // Auto-derive a short title from the story so the backend (which still
+  // requires a title) gets something reasonable without a separate field.
+  const deriveTitle = (text) => {
+    const trimmed = text.trim().replace(/\s+/g, " ")
+    return trimmed.length > 60 ? trimmed.slice(0, 60).trim() + "..." : trimmed
+  }
 
   const handlePublish = async () => {
 
@@ -82,33 +89,17 @@ function ShareExperience() {
 
       await axios.post("http://127.0.0.1:8000/posts", {
         user_id: user.id,
-        title: title.trim(),
+        title: deriveTitle(story),
         content: story.trim(),
         location: location.trim(),
         category,
         image_url: imageUrl,
       })
 
-      // If the user picked an experience tag, also save it to the
-      // Experience table — this is the "search engine module" DB: the
-      // Hero section's Experience search checks this table first and
-      // only calls out elsewhere if nothing is found there.
-      if (experienceTag) {
-        createExperience({
-          title: title.trim(),
-          destination: location.trim(),
-          category: experienceTag,
-          description: story.trim(),
-          author: user.name || "Anonymous",
-        }).catch((err) => console.error("Could not save experience tag:", err))
-      }
-
       alert("Your experience has been published!")
 
       setLocation("")
       setCategory("awareness")
-      setTitle("")
-      setExperienceTag(null)
       setStory("")
       setFiles([])
 
@@ -168,7 +159,9 @@ function ShareExperience() {
 
               <div className="mb-6">
                 <h2 className="text-[14px] font-bold text-[#111827]">2. What type of experience do you want to share?</h2>
-                <p className="text-[12px] text-[#6b7280] mt-0.5 mb-2.5">Choose the category that best fits your story.</p>
+                <p className="text-[12px] text-[#6b7280] mt-0.5 mb-2.5">
+                  Choose the category that best fits your story — this also decides where it becomes searchable (Community, Guide search, or Experience search).
+                </p>
 
                 <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3">
                   {CATEGORIES.map(({ key, label, desc, icon: Icon, bg, color }) => (
@@ -184,46 +177,6 @@ function ShareExperience() {
                       </div>
                       <h3 className="text-[12.5px] font-semibold text-[#111827] mt-2">{label}</h3>
                       <p className="text-[10.5px] text-[#6b7280] mt-0.5 leading-4">{desc}</p>
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              {/* STEP 3: TITLE */}
-
-              <div className="mb-6">
-                <h2 className="text-[14px] font-bold text-[#111827]">3. Add Title (Tagline)</h2>
-                <p className="text-[12px] text-[#6b7280] mt-0.5 mb-2.5">Write a short tagline for your experience</p>
-
-                <div className="relative">
-                  <input
-                    value={title}
-                    maxLength={TITLE_LIMIT}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="E.g., Beware of fake taxi scams in Manali!"
-                    className="w-full h-[46px] border border-[#ececec] rounded-xl px-3.5 pr-16 outline-none text-[13px] focus:border-[#2563eb]"
-                  />
-                  <span className="absolute right-3.5 top-1/2 -translate-y-1/2 text-[10.5px] text-[#9ca3af]">
-                    {title.length}/{TITLE_LIMIT}
-                  </span>
-                </div>
-
-                <p className="text-[11.5px] text-[#6b7280] mt-3 mb-1.5">
-                  Tag the kind of experience this is (optional) — this makes it findable in Experience search
-                </p>
-                <div className="flex flex-wrap gap-2">
-                  {EXPERIENCE_TAGS.map((tag) => (
-                    <button
-                      key={tag}
-                      type="button"
-                      onClick={() => setExperienceTag((prev) => (prev === tag ? null : tag))}
-                      className={`text-[11.5px] px-3 h-[28px] rounded-full border transition ${
-                        experienceTag === tag
-                          ? "bg-[#2563eb] border-[#2563eb] text-white"
-                          : "bg-white border-[#ececec] text-[#4b5563] hover:bg-[#f5f7fb]"
-                      }`}
-                    >
-                      {tag}
                     </button>
                   ))}
                 </div>
@@ -269,8 +222,8 @@ function ShareExperience() {
                   <label className="border-2 border-dashed border-[#d1d5db] rounded-xl flex flex-col items-center justify-center py-8 cursor-pointer hover:border-[#2563eb] transition">
                     <FaCloudUploadAlt className="text-[26px] text-[#9ca3af]" />
                     <p className="text-[12.5px] font-semibold text-[#374151] mt-2">Drag & drop files here or click to upload</p>
-                    <p className="text-[10.5px] text-[#9ca3af] mt-1">Images (JPG, PNG) or Videos (MP4, MOV) — Max 5 files, 50MB each</p>
-                    <input type="file" accept="image/*,video/*" multiple className="hidden" onChange={handleFileSelect} />
+                    <p className="text-[10.5px] text-[#9ca3af] mt-1">Images (JPG, PNG) — 1 image per post, max 5MB</p>
+                    <input type="file" accept="image/*" className="hidden" onChange={handleFileSelect} />
                   </label>
 
                   <div className="bg-[#f9fafb] rounded-xl p-4">
@@ -286,7 +239,7 @@ function ShareExperience() {
                 </div>
 
                 {files.length > 0 && (
-                  <p className="text-[11.5px] text-[#16a34a] mt-2.5">{files.length} file(s) selected</p>
+                  <p className="text-[11.5px] text-[#16a34a] mt-2.5">{files[0].name} selected</p>
                 )}
               </div>
 

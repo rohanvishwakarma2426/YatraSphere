@@ -3,8 +3,6 @@ from typing import Optional
 from pydantic import BaseModel, Field, ConfigDict
 
 # Categories that make a post show up in Guide Search (/api/guides/search).
-# Anything else ("awareness", "scam", "thoughts", "tips", "other") is a
-# regular community post and is excluded from guide results.
 GUIDE_CATEGORIES = {
     "budget_guide",
     "safety_guide",
@@ -14,7 +12,22 @@ GUIDE_CATEGORIES = {
     "best_time",
 }
 
-ALL_CATEGORIES = GUIDE_CATEGORIES | {"awareness", "scam", "thoughts", "tips", "other"}
+# Categories that make a post show up in Experience Search (/api/experience/search).
+EXPERIENCE_CATEGORIES = {
+    "camping",
+    "trekking",
+    "nightlife",
+    "cafes",
+    "river_rafting",
+    "solo_trips",
+    "hidden_gems",
+}
+
+ALL_CATEGORIES = (
+    GUIDE_CATEGORIES
+    | EXPERIENCE_CATEGORIES
+    | {"awareness", "scam", "thoughts", "tips", "other"}
+)
 
 
 class PostCreate(BaseModel):

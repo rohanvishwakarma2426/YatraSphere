@@ -5,7 +5,7 @@ from fastapi.staticfiles import StaticFiles
 from app.database.connection import engine
 from app.database.base import Base
 
-from app.models import user_model, post_model, destination_model, experience_model
+from app.models import user_model, post_model, destination_model
 
 from app.routes.auth_routes import router as auth_router
 from app.routes.post_routes import router as post_router
@@ -25,8 +25,6 @@ app.add_middleware(
     allow_methods=["*"],
     allow_headers=["*"],
 )
-
-# Serves uploaded images at http://127.0.0.1:8000/uploads/<filename>
 
 app.mount("/uploads", StaticFiles(directory="uploads"), name="uploads")
 

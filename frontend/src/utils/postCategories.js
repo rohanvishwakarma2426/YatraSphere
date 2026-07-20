@@ -1,4 +1,5 @@
 import { GUIDE_CATEGORIES } from "./guideHelpers"
+import { EXPERIENCE_CATEGORIES } from "./experienceHelpers"
 
 // Single source of truth for turning a post's raw `category` key into a
 // human-readable label — used by ShareExperience's step 2 chips and by
@@ -10,6 +11,7 @@ export const POST_CATEGORIES = [
   { key: "thoughts", label: "Thoughts" },
   { key: "tips", label: "Tips" },
   ...GUIDE_CATEGORIES.map((g) => ({ key: g.key, label: g.label })),
+  ...EXPERIENCE_CATEGORIES.map((e) => ({ key: e.key, label: e.label })),
   { key: "other", label: "Other" },
 ]
 

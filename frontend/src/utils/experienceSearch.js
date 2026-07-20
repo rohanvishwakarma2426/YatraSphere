@@ -1,5 +1,8 @@
 const API_BASE = "http://127.0.0.1:8000"
 
+// Experience search now queries the unified Post table (posts tagged with
+// an experience category) instead of a separate Experience table — real
+// user-published posts show up here, not just seed data.
 export async function searchExperiences(query, limit = 6) {
 
   const q = query.trim()
@@ -14,42 +17,17 @@ export async function searchExperiences(query, limit = 6) {
 
     const data = await res.json()
 
-    return data.slice(0, limit).map((exp) => ({
-      id: exp.id,
-      name: exp.title,
-      fullAddress: [exp.category, exp.destination].filter(Boolean).join(" · "),
-      description: exp.description,
-      likes: exp.likes,
+    return data.slice(0, limit).map((post) => ({
+      id: post.id,
+      name: post.title,
+      fullAddress: [post.category, post.location].filter(Boolean).join(" · "),
+      description: post.content,
+      likes: post.likes_count,
     }))
 
   } catch (err) {
     console.error("Experience search failed:", err)
     return []
-  }
-
-}
-export async function createExperience({ title, destination, category, description, author }) {
-
-  const url = `${API_BASE}/api/experience/create`
-
-  try {
-
-    const res = await fetch(url, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ title, destination, category, description, author }),
-    })
-
-    if (!res.ok) {
-      const errorBody = await res.json().catch(() => null)
-      throw new Error(errorBody?.detail || "Failed to publish experience.")
-    }
-
-    return await res.json()
-
-  } catch (err) {
-    console.error("Create experience failed:", err)
-    throw err
   }
 
 }

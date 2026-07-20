@@ -1,6 +1,7 @@
 import { useState, useEffect, useRef } from "react"
 import { FaCompass, FaSpinner } from "react-icons/fa"
 import { searchExperiences } from "../../utils/experienceSearch"
+import { EXPERIENCE_CATEGORIES } from "../../utils/experienceHelpers"
 
 function ExperienceAutocomplete({ value, onChange, onSelect, placeholder }) {
 
@@ -36,6 +37,12 @@ function ExperienceAutocomplete({ value, onChange, onSelect, placeholder }) {
     setSuggestions([])
   }
 
+  // Clicking a category chip fills the box with its label — the useEffect
+  // above then runs the same debounced search automatically.
+  const handleCategoryClick = (category) => {
+    onChange(category.label)
+  }
+
   return (
 
     <div className="relative flex-1">
@@ -49,6 +56,38 @@ function ExperienceAutocomplete({ value, onChange, onSelect, placeholder }) {
         placeholder={placeholder}
         className="w-full h-[42px] border border-[#ececec] rounded-xl px-4 outline-none focus:border-[#2563eb] text-[13px]"
       />
+
+      {open && !value.trim() && (
+
+        // Nothing typed yet — browse by category instead.
+
+        <div className="absolute top-[46px] left-0 w-full bg-white rounded-xl border border-[#ececec] shadow-lg z-30 max-h-[300px] overflow-y-auto py-2">
+
+          <p className="px-4 pb-1.5 text-[10.5px] font-semibold text-[#9ca3af] uppercase tracking-wide">
+            Browse by category
+          </p>
+
+          {EXPERIENCE_CATEGORIES.map((cat) => {
+            const Icon = cat.icon
+            return (
+              <button
+                key={cat.key}
+                onMouseDown={() => handleCategoryClick(cat)}
+                className="w-full flex items-center gap-2.5 px-4 py-2 text-left hover:bg-[#f5f7fb] transition"
+              >
+                <div className={`w-[26px] h-[26px] rounded-lg flex items-center justify-center shrink-0 ${cat.bg}`}>
+                  <Icon className={`text-[11px] ${cat.color}`} />
+                </div>
+                <span className="text-[12.5px] font-medium text-[#111827]">
+                  {cat.label}
+                </span>
+              </button>
+            )
+          })}
+
+        </div>
+
+      )}
 
       {open && value.trim() && (
 
