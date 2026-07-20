@@ -9,3 +9,5 @@ class User(Base):
     name = Column(String)
     email = Column(String, unique=True)
     password = Column(String)
+    avatar_url = Column(String, nullable=True)
+    bio = Column(String, nullable=True)

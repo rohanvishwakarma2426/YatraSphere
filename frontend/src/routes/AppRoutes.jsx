@@ -14,6 +14,7 @@ import BlogsGuides from "../pages/BlogsGuides/BlogsGuides";
 import Explore from "../pages/Explore/Explore";
 import Experiences from "../pages/Experiences/Experiences";
 import Guides from "../pages/Guides/Guides";
+import Profile from "../pages/Profile/Profile";
 import RequireAuth from "./RequireAuth";
 import LocationDashboard from "../pages/Location/LocationDashboard";
 function AppRoutes() {
@@ -86,6 +87,17 @@ function AppRoutes() {
         {/* LOCATION DASHBOARD */}
 
         <Route path="/location/:name" element={<LocationDashboard />} />
+
+        {/* PROFILE DASHBOARD — protected, own posts + profile edit */}
+
+        <Route
+          path="/profile"
+          element={
+            <RequireAuth>
+              <Profile />
+            </RequireAuth>
+          }
+        />
       </Routes>
     </BrowserRouter>
   );

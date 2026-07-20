@@ -1,11 +1,23 @@
 const API_BASE = "http://127.0.0.1:8000"
 
-export async function searchGuides(query, limit = 6) {
+// Backend PostOut only has: title, content, location, category, created_at
+// (no "destination"/"reading_time" fields) — so we derive fullAddress from
+// location and estimate reading time from content length ourselves.
+function estimateReadingTime(content) {
+  const words = (content || "").trim().split(/\s+/).filter(Boolean).length
+  return Math.max(1, Math.round(words / 200)) + " min read"
+}
 
-  const q = query.trim()
-  if (!q) return []
+export async function searchGuides(query, limit = 6, category = null) {
 
-  const url = `${API_BASE}/api/guides/search?q=${encodeURIComponent(q)}`
+  const q = (query || "").trim()
+  if (!q && !category) return []
+
+  const params = new URLSearchParams()
+  if (q) params.set("q", q)
+  if (category) params.set("category", category)
+
+  const url = `${API_BASE}/api/guides/search?${params.toString()}`
 
   try {
 
@@ -17,9 +29,13 @@ export async function searchGuides(query, limit = 6) {
     return data.slice(0, limit).map((guide) => ({
       id: guide.id,
       name: guide.title,
-      fullAddress: [guide.category, guide.destination].filter(Boolean).join(" · "),
+      category: guide.category,
+      location: guide.location,
+      fullAddress: guide.location || "",
       description: guide.content,
-      readingTime: guide.reading_time,
+      readingTime: estimateReadingTime(guide.content),
+      createdAt: guide.created_at,
+      author: guide.author?.name || "Traveler",
     }))
 
   } catch (err) {

@@ -3,6 +3,7 @@ import { useNavigate } from "react-router-dom";
 import heroBg from "../../assets/hero/hero-bg.jpg";
 import LocationAutocomplete from "./LocationAutocomplete";
 import ExperienceAutocomplete from "./ExperienceAutocomplete";
+import GuideAutocomplete from "./GuideAutocomplete";
 
 function HeroSection() {
   const navigate = useNavigate();
@@ -22,6 +23,10 @@ function HeroSection() {
 
   const handleExperienceSelect = (item) => {
     navigate(`/experiences?q=${encodeURIComponent(item.name)}`);
+  };
+
+  const handleGuideSelect = (item) => {
+    navigate(`/guides?q=${encodeURIComponent(item.name)}`);
   };
 
   const handleSearch = () => {
@@ -117,15 +122,11 @@ function HeroSection() {
 
               {activeTab === "guides" && (
 
-                <input
-                  type="text"
+                <GuideAutocomplete
                   value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter") handleSearch();
-                  }}
+                  onChange={setSearch}
+                  onSelect={handleGuideSelect}
                   placeholder={placeholders.guides}
-                  className="flex-1 h-[42px] border border-[#ececec] rounded-xl px-4 outline-none focus:border-[#2563eb] text-[13px]"
                 />
 
               )}

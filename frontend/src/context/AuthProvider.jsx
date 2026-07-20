@@ -38,10 +38,21 @@ function AuthProvider({ children }) {
     setIsGuest(false)
   }
 
+  // Called after PUT /users/{id} succeeds — merges the updated fields into
+  // the stored session so Navbar/Profile reflect the change immediately,
+  // without needing a re-login.
+  const updateUser = (updatedFields) => {
+    setUser((prev) => {
+      const merged = { ...prev, ...updatedFields }
+      localStorage.setItem("user", JSON.stringify(merged))
+      return merged
+    })
+  }
+
   const isAuthenticated = Boolean(user) || isGuest
 
   return (
-    <AuthContext.Provider value={{ user, isGuest, isAuthenticated, login, loginAsGuest, logout }}>
+    <AuthContext.Provider value={{ user, isGuest, isAuthenticated, login, loginAsGuest, logout, updateUser }}>
       {children}
     </AuthContext.Provider>
   )

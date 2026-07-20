@@ -22,6 +22,7 @@ import {
   FaBars,
   FaSignOutAlt,
   FaSignInAlt,
+  FaUser,
 } from "react-icons/fa"
 
 import {
@@ -160,7 +161,7 @@ function Navbar() {
             >
 
               <img
-                src={profile}
+                src={user?.avatar_url || profile}
                 alt="profile"
                 className="w-[36px] h-[36px] rounded-full object-cover"
               />
@@ -192,13 +193,23 @@ function Navbar() {
                   </div>
 
                   {user ? (
-                    <button
-                      onClick={handleLogout}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#dc2626] hover:bg-[#fdeaea] transition"
-                    >
-                      <FaSignOutAlt className="text-[12px]" />
-                      Logout
-                    </button>
+                    <>
+                      <Link
+                        to="/profile"
+                        onClick={() => setProfileOpen(false)}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#374151] hover:bg-[#f5f7fb] transition"
+                      >
+                        <FaUser className="text-[12px]" />
+                        My Profile
+                      </Link>
+                      <button
+                        onClick={handleLogout}
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#dc2626] hover:bg-[#fdeaea] transition"
+                      >
+                        <FaSignOutAlt className="text-[12px]" />
+                        Logout
+                      </button>
+                    </>
                   ) : (
                     <Link
                       to="/login"

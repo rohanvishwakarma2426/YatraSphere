@@ -9,6 +9,8 @@ import StoriesBar from "../../components/community/StoriesBar"
 import PostCard from "../../components/community/PostCard"
 import CommunitySidebar from "../../components/community/CommunitySidebar"
 import { useAuth } from "../../hooks/useAuth"
+import { getActiveStories, createStory } from "../../services/storyService"
+import { uploadImage } from "../../services/userService"
 
 const FOLLOWED_LOCATIONS_KEY = "ys_followed_locations"
 const FOLLOWED_PEOPLE_KEY = "ys_followed_people"
@@ -60,6 +62,16 @@ function mapPost(p) {
   }
 }
 
+// Maps the backend's Story shape into what <StoriesBar /> expects.
+function mapStory(s) {
+  return {
+    id: s.id,
+    author: s.author?.name || "Traveler",
+    avatar: s.author?.avatar_url || DEFAULT_AVATAR,
+    image: s.image_url,
+  }
+}
+
 function Community() {
 
   const { user } = useAuth()
@@ -68,6 +80,8 @@ function Community() {
   const [followedPeople, setFollowedPeople] = useState(() => loadStoredList(FOLLOWED_PEOPLE_KEY))
   const [posts, setPosts] = useState([])
   const [allUsers, setAllUsers] = useState([])
+  const [stories, setStories] = useState([])
+  const [storyUploading, setStoryUploading] = useState(false)
   const [loading, setLoading] = useState(true)
   const [loadError, setLoadError] = useState("")
   const [activeTab, setActiveTab] = useState("feed") // "feed" | "explore"
@@ -82,6 +96,12 @@ function Community() {
   useEffect(() => {
     localStorage.setItem(FOLLOWED_PEOPLE_KEY, JSON.stringify(followedPeople))
   }, [followedPeople])
+
+  const refreshStories = () => {
+    getActiveStories()
+      .then((data) => setStories(data))
+      .catch((err) => console.error("Failed to load stories:", err))
+  }
 
   useEffect(() => {
 
@@ -109,9 +129,35 @@ function Community() {
       .then((res) => { if (!cancelled) setAllUsers(res.data) })
       .catch((err) => console.error("Failed to load users:", err))
 
+    refreshStories()
+
     return () => { cancelled = true }
 
   }, [])
+
+  // Called by StoriesBar when the user picks a file for "Your Story":
+  // upload the image, then create the story, then refresh the bar.
+  const handleAddStory = async (file) => {
+
+    if (!user) {
+      alert("Please login to add a story.")
+      return
+    }
+
+    setStoryUploading(true)
+
+    try {
+      const imageUrl = await uploadImage(file)
+      await createStory(user.id, imageUrl)
+      refreshStories()
+    } catch (err) {
+      console.error("Failed to add story:", err)
+      alert(err.response?.data?.detail || "Failed to add story. Please try again.")
+    } finally {
+      setStoryUploading(false)
+    }
+
+  }
 
   const toggleFollow = (location) => {
     setFollowedLocations((prev) =>
@@ -250,7 +296,7 @@ function Community() {
 
               <>
 
-                <StoriesBar stories={[]} />
+                <StoriesBar stories={stories.map(mapStory)} onAddStory={handleAddStory} uploading={storyUploading} />
 
                 <div className="bg-[#eef4ff] border border-[#dbe7ff] rounded-xl px-4 py-2.5 text-[12px] text-[#2563eb]">
                   Showing posts from locations and people you follow: <span className="font-semibold">{followedLocations.join(", ") || "no locations"}</span>

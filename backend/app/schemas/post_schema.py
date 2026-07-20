@@ -39,6 +39,14 @@ class PostCreate(BaseModel):
     image_url: Optional[str] = None
 
 
+class PostUpdate(BaseModel):
+    title: Optional[str] = Field(default=None, min_length=1, max_length=150)
+    content: Optional[str] = Field(default=None, min_length=1, max_length=5000)
+    location: Optional[str] = None
+    category: Optional[str] = None
+    image_url: Optional[str] = None
+
+
 class AuthorOut(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 

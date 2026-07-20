@@ -1,8 +1,8 @@
 import { useState } from "react"
 import { Link } from "react-router-dom"
-import { FaHeart, FaRegHeart, FaRegComment, FaShare, FaRegBookmark, FaMapMarkerAlt } from "react-icons/fa"
+import { FaHeart, FaRegHeart, FaRegComment, FaShare, FaRegBookmark, FaMapMarkerAlt, FaPen, FaTrash } from "react-icons/fa"
 
-function PostCard({ post }) {
+function PostCard({ post, onEdit, onDelete }) {
 
   const [liked, setLiked] = useState(false)
   const [likeCount, setLikeCount] = useState(post.likes)
@@ -43,6 +43,36 @@ function PostCard({ post }) {
           </div>
 
         </div>
+
+        {/* OWNER ACTIONS — only shown on the Profile Dashboard */}
+
+        {(onEdit || onDelete) && (
+
+          <div className="flex items-center gap-1 shrink-0">
+
+            {onEdit && (
+              <button
+                onClick={() => onEdit(post)}
+                title="Edit post"
+                className="w-[30px] h-[30px] rounded-lg flex items-center justify-center text-[#6b7280] hover:bg-[#eef4ff] hover:text-[#2563eb] transition"
+              >
+                <FaPen className="text-[12px]" />
+              </button>
+            )}
+
+            {onDelete && (
+              <button
+                onClick={() => onDelete(post)}
+                title="Delete post"
+                className="w-[30px] h-[30px] rounded-lg flex items-center justify-center text-[#6b7280] hover:bg-[#fdeaea] hover:text-[#dc2626] transition"
+              >
+                <FaTrash className="text-[12px]" />
+              </button>
+            )}
+
+          </div>
+
+        )}
 
       </div>
 

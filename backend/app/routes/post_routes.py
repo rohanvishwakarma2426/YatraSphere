@@ -7,7 +7,7 @@ from app.database.connection import get_db
 from app.models.post_model import Post
 from app.models.user_model import User
 from app.schemas.post_schema import (
-    PostCreate, PostOut, GUIDE_CATEGORIES, EXPERIENCE_CATEGORIES, ALL_CATEGORIES,
+    PostCreate, PostUpdate, PostOut, GUIDE_CATEGORIES, EXPERIENCE_CATEGORIES, ALL_CATEGORIES,
 )
 
 router = APIRouter()
@@ -64,6 +64,56 @@ def list_known_locations(db: Session = Depends(get_db)):
             seen[key] = loc.strip()
 
     return sorted(seen.values(), key=str.lower)
+
+
+# ================= MY POSTS (Profile Dashboard) =================
+
+@router.get("/users/{user_id}/posts", response_model=list[PostOut])
+def list_user_posts(user_id: int, db: Session = Depends(get_db)):
+    return (
+        db.query(Post)
+        .filter(Post.user_id == user_id)
+        .order_by(Post.created_at.desc())
+        .all()
+    )
+
+
+# ================= EDIT POST =================
+
+@router.put("/posts/{post_id}", response_model=PostOut)
+def update_post(post_id: int, payload: PostUpdate, db: Session = Depends(get_db)):
+
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    if payload.category is not None and payload.category not in ALL_CATEGORIES:
+        raise HTTPException(status_code=400, detail=f"Invalid category '{payload.category}'")
+
+    for field in ("title", "content", "location", "category", "image_url"):
+        value = getattr(payload, field)
+        if value is not None:
+            setattr(post, field, value)
+
+    db.commit()
+    db.refresh(post)
+
+    return post
+
+
+# ================= DELETE POST =================
+
+@router.delete("/posts/{post_id}")
+def delete_post(post_id: int, db: Session = Depends(get_db)):
+
+    post = db.query(Post).filter(Post.id == post_id).first()
+    if not post:
+        raise HTTPException(status_code=404, detail="Post not found")
+
+    db.delete(post)
+    db.commit()
+
+    return {"message": "Post deleted successfully"}
 
 
 # ================= COMMUNITY FEED =================
