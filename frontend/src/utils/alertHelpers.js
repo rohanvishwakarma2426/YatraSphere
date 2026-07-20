@@ -8,9 +8,17 @@ import {
 
 // Central place for category styling + icons so every alert component
 // (list, tabs, donut chart) stays visually in sync.
-export const CATEGORIES = ["safety", "weather", "booking", "offers", "community"]
+export const CATEGORIES = ["scam", "safety", "weather", "booking", "offers", "community"]
 
 export const CATEGORY_META = {
+  scam: {
+    label: "Scam Alert",
+    icon: FaExclamationTriangle,
+    text: "text-[#dc2626]",
+    bg: "bg-[#fdeaea]",
+    dot: "#dc2626",
+    pill: "bg-[#fdeaea] text-[#dc2626]",
+  },
   safety: {
     label: "Safety",
     icon: FaExclamationTriangle,

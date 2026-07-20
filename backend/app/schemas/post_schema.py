@@ -52,6 +52,7 @@ class AuthorOut(BaseModel):
 
     id: int
     name: str
+    avatar_url: Optional[str] = None
 
 
 class PostOut(BaseModel):

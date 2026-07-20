@@ -1,22 +1,57 @@
-import {
-  FaHeart,
-  FaWallet,
-  FaChild,
-  FaMountain,
-  FaUtensils,
-  FaCompass,
-} from "react-icons/fa"
+import { useState, useEffect } from "react"
+import { useNavigate } from "react-router-dom"
+import axios from "axios"
+import { FaTag, FaSpinner } from "react-icons/fa"
+import { getCategoryLabel } from "../../utils/postCategories"
+import { GUIDE_CATEGORIES } from "../../utils/guideHelpers"
+import { EXPERIENCE_CATEGORIES } from "../../utils/experienceHelpers"
 
-const categories = [
-  { icon: FaHeart, title: "Solo Travel", count: "123 Guides", bg: "bg-[#fdeaea]", color: "text-[#dc2626]" },
-  { icon: FaWallet, title: "Budget Trips", count: "245 Guides", bg: "bg-[#eaf1ff]", color: "text-[#2563eb]" },
-  { icon: FaChild, title: "Family Trips", count: "178 Guides", bg: "bg-[#eaf6fd]", color: "text-[#0891b2]" },
-  { icon: FaMountain, title: "Adventure", count: "312 Guides", bg: "bg-[#f2edfd]", color: "text-[#7c3aed]" },
-  { icon: FaUtensils, title: "Food & Culture", count: "156 Guides", bg: "bg-[#fff4e6]", color: "text-[#d97706]" },
-  { icon: FaCompass, title: "Offbeat Places", count: "189 Guides", bg: "bg-[#e9f9ef]", color: "text-[#16a34a]" },
-]
+const GUIDE_KEYS = new Set(GUIDE_CATEGORIES.map((c) => c.key))
+const EXPERIENCE_KEYS = new Set(EXPERIENCE_CATEGORIES.map((c) => c.key))
+
+function metaFor(key) {
+  return GUIDE_CATEGORIES.find((c) => c.key === key) || EXPERIENCE_CATEGORIES.find((c) => c.key === key) || null
+}
 
 function TopCategories() {
+
+  const navigate = useNavigate()
+
+  const [categories, setCategories] = useState([])
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+
+    let cancelled = false
+
+    axios.get("http://127.0.0.1:8000/posts")
+      .then((res) => {
+        if (cancelled) return
+
+        const counts = {}
+        for (const p of res.data) {
+          counts[p.category] = (counts[p.category] || 0) + 1
+        }
+
+        const ranked = Object.entries(counts)
+          .sort((a, b) => b[1] - a[1])
+          .slice(0, 6)
+          .map(([key, count]) => ({ key, count, label: getCategoryLabel(key), meta: metaFor(key) }))
+
+        setCategories(ranked)
+      })
+      .catch((err) => console.error("Failed to load top categories:", err))
+      .finally(() => { if (!cancelled) setLoading(false) })
+
+    return () => { cancelled = true }
+
+  }, [])
+
+  const handleClick = (cat) => {
+    if (GUIDE_KEYS.has(cat.key)) navigate(`/guides?category=${cat.key}`)
+    else if (EXPERIENCE_KEYS.has(cat.key)) navigate(`/experiences?q=${encodeURIComponent(cat.label)}`)
+    else navigate("/community")
+  }
 
   return (
 
@@ -26,33 +61,55 @@ function TopCategories() {
         Top Categories
       </h2>
 
-      <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
+      {loading ? (
 
-        {categories.map(({ icon: Icon, title, count, bg, color }) => (
+        <div className="flex items-center gap-2 text-[#6b7280] text-[13px] py-6 justify-center">
+          <FaSpinner className="animate-spin" /> Loading categories...
+        </div>
 
-          <div
-            key={title}
-            className="bg-white rounded-xl border border-[#ececec] shadow-sm p-3 flex items-center gap-2.5 cursor-pointer hover:shadow-md transition"
-          >
+      ) : categories.length === 0 ? (
 
-            <div className={`w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
-              <Icon className={`text-[14px] ${color}`} />
-            </div>
+        <div className="bg-white rounded-2xl border border-[#ececec] p-6 text-center text-[#6b7280] text-[13px]">
+          No categories yet — posts will group here automatically.
+        </div>
 
-            <div className="min-w-0">
-              <h3 className="text-[12.5px] font-semibold text-[#111827] truncate">
-                {title}
-              </h3>
-              <p className="text-[11px] text-[#6b7280]">
-                {count}
-              </p>
-            </div>
+      ) : (
 
-          </div>
+        <div className="grid grid-cols-[repeat(auto-fit,minmax(150px,1fr))] gap-3">
 
-        ))}
+          {categories.map((cat) => {
+            const Icon = cat.meta?.icon || FaTag
+            const bg = cat.meta?.bg || "bg-[#eef4ff]"
+            const color = cat.meta?.color || "text-[#2563eb]"
+            return (
 
-      </div>
+              <div
+                key={cat.key}
+                onClick={() => handleClick(cat)}
+                className="bg-white rounded-xl border border-[#ececec] shadow-sm p-3 flex items-center gap-2.5 cursor-pointer hover:shadow-md transition"
+              >
+
+                <div className={`w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
+                  <Icon className={`text-[14px] ${color}`} />
+                </div>
+
+                <div className="min-w-0">
+                  <h3 className="text-[12.5px] font-semibold text-[#111827] truncate">
+                    {cat.label}
+                  </h3>
+                  <p className="text-[11px] text-[#6b7280]">
+                    {cat.count} post{cat.count === 1 ? "" : "s"}
+                  </p>
+                </div>
+
+              </div>
+
+            )
+          })}
+
+        </div>
+
+      )}
 
     </div>
 

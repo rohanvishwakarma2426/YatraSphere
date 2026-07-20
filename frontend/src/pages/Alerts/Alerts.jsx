@@ -1,5 +1,7 @@
-import { useState, useMemo } from "react"
-import { FaSearch, FaCheckDouble, FaTimes } from "react-icons/fa"
+import { useState, useMemo, useEffect } from "react"
+import { useSearchParams } from "react-router-dom"
+import axios from "axios"
+import { FaSearch, FaCheckDouble, FaTimes, FaSpinner } from "react-icons/fa"
 
 import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
@@ -100,9 +102,49 @@ export const INITIAL_ALERTS = [
 
 function Alerts() {
 
+  const [params] = useSearchParams()
+
   const [alerts, setAlerts] = useState(INITIAL_ALERTS)
-  const [activeCategory, setActiveCategory] = useState("all")
+  const [activeCategory, setActiveCategory] = useState(params.get("category") || "all")
   const [locationQuery, setLocationQuery] = useState("")
+  const [loadingScams, setLoadingScams] = useState(true)
+
+  // Real, live "scam" alerts — pulled straight from Share Experience posts
+  // tagged category="scam" (the same data the Home page's Scam Alerts
+  // widget reads). Prepended to the static mock alerts, newest first.
+  useEffect(() => {
+
+    let cancelled = false
+
+    axios.get("http://127.0.0.1:8000/posts", { params: { category: "scam" } })
+      .then((res) => {
+        if (cancelled) return
+
+        const liveScamAlerts = res.data.map((p) => ({
+          id: `scam-${p.id}`,
+          category: "scam",
+          title: p.title,
+          description: p.content,
+          location: p.location || "Unknown location",
+          time: new Date(p.created_at).toLocaleTimeString("en-IN", { hour: "numeric", minute: "2-digit" }),
+          timestamp: new Date(p.created_at).getTime(),
+          read: false,
+          image: p.image_url || undefined,
+        }))
+
+        setAlerts((prev) => {
+          // Drop any previously-loaded live scam alerts before re-adding,
+          // so a refetch doesn't duplicate them.
+          const withoutOldScams = prev.filter((a) => typeof a.id !== "string" || !a.id.startsWith("scam-"))
+          return [...liveScamAlerts, ...withoutOldScams].sort((a, b) => b.timestamp - a.timestamp)
+        })
+      })
+      .catch((err) => console.error("Failed to load live scam alerts:", err))
+      .finally(() => { if (!cancelled) setLoadingScams(false) })
+
+    return () => { cancelled = true }
+
+  }, [])
 
   const locationFiltered = useMemo(() => {
     const q = locationQuery.trim().toLowerCase()
@@ -248,6 +290,12 @@ function Alerts() {
             </div>
 
             {/* ALERT LIST */}
+
+            {loadingScams && (
+              <div className="flex items-center gap-2 text-[#9ca3af] text-[11.5px]">
+                <FaSpinner className="animate-spin" /> Checking for new scam reports...
+              </div>
+            )}
 
             {Object.keys(grouped).length > 0 ? (
 

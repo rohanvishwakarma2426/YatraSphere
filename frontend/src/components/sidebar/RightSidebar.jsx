@@ -1,13 +1,64 @@
+import { useState, useEffect } from "react"
+import { Link } from "react-router-dom"
+import axios from "axios"
 import { FaExclamationTriangle, FaHeart, FaRegComment, FaShare } from "react-icons/fa"
 import TrendingTopics from "../sections/TrendingTopics"
 
-const scamAlerts = [
-  { title: "Manali Taxi Overcharging", desc: "Be aware of fixed price scams...", time: "New", isNew: true },
-  { title: "Goa Fake Rental Scam", desc: "Don't pay full amount in advance...", time: "1d ago" },
-  { title: "Jaipur Guide Scam", desc: "Official guides only at...", time: "2d ago" },
-]
+const DEFAULT_AVATAR =
+  "https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop"
+
+function timeAgo(dateString) {
+  const diffMs = Date.now() - new Date(dateString).getTime()
+  const mins = Math.floor(diffMs / 60000)
+  if (mins < 1) return "Just now"
+  if (mins < 60) return `${mins}m ago`
+  const hours = Math.floor(mins / 60)
+  if (hours < 24) return `${hours}h ago`
+  const days = Math.floor(hours / 24)
+  return `${days}d ago`
+}
 
 function RightSidebar() {
+
+  const [scamAlerts, setScamAlerts] = useState([])
+  const [latestPost, setLatestPost] = useState(null)
+  const [loading, setLoading] = useState(true)
+
+  useEffect(() => {
+
+    let cancelled = false
+
+    axios.get("http://127.0.0.1:8000/posts")
+      .then((res) => {
+        if (cancelled) return
+
+        const posts = res.data
+
+        // SCAM ALERTS — real "scam" category posts, newest first.
+        const scams = posts
+          .filter((p) => p.category === "scam")
+          .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+          .slice(0, 3)
+          .map((p) => ({
+            id: p.id,
+            title: p.title,
+            desc: p.content,
+            isNew: Date.now() - new Date(p.created_at).getTime() < 24 * 60 * 60 * 1000,
+            timeAgo: timeAgo(p.created_at),
+          }))
+
+        setScamAlerts(scams)
+
+        // FROM THE COMMUNITY — most recent post overall.
+        const sortedAll = [...posts].sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+        setLatestPost(sortedAll[0] || null)
+      })
+      .catch((err) => console.error("Failed to load sidebar data:", err))
+      .finally(() => { if (!cancelled) setLoading(false) })
+
+    return () => { cancelled = true }
+
+  }, [])
 
   return (
 
@@ -19,60 +70,71 @@ function RightSidebar() {
 
       {/* SCAM ALERTS */}
 
-
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
 
         <div className="flex items-center justify-between mb-3">
           <h2 className="text-[14px] font-bold text-[#111827]">
             Scam Alerts
           </h2>
-          <span className="text-[#2563eb] text-[12px] font-semibold cursor-pointer">
+          <Link to="/alerts?category=scam" className="text-[#2563eb] text-[12px] font-semibold hover:underline">
             View All
-          </span>
+          </Link>
         </div>
 
-        <div className="space-y-3">
+        {loading ? (
 
-          {scamAlerts.map((alert) => (
+          <p className="text-[12px] text-[#9ca3af]">Loading...</p>
 
-            <div key={alert.title} className="flex items-start gap-2.5">
+        ) : scamAlerts.length === 0 ? (
 
-              <div className="w-[28px] h-[28px] shrink-0 rounded-lg bg-[#fdeaea] flex items-center justify-center">
-                <FaExclamationTriangle className="text-[#dc2626] text-[11px]" />
-              </div>
+          <p className="text-[12px] text-[#9ca3af]">No scam reports yet.</p>
 
-              <div className="min-w-0 flex-1">
+        ) : (
 
-                <div className="flex items-center justify-between gap-2">
-                  <h3 className="text-[12px] font-semibold text-[#111827] truncate">
-                    {alert.title}
-                  </h3>
-                  {alert.isNew ? (
-                    <span className="shrink-0 bg-[#fdeaea] text-[#dc2626] text-[9px] font-bold px-1.5 py-0.5 rounded-full">
-                      New
-                    </span>
-                  ) : (
-                    <span className="shrink-0 text-[10px] text-[#9ca3af]">
-                      {alert.time}
-                    </span>
-                  )}
+          <div className="space-y-3">
+
+            {scamAlerts.map((alert) => (
+
+              <div key={alert.id} className="flex items-start gap-2.5">
+
+                <div className="w-[28px] h-[28px] shrink-0 rounded-lg bg-[#fdeaea] flex items-center justify-center">
+                  <FaExclamationTriangle className="text-[#dc2626] text-[11px]" />
                 </div>
 
-                <p className="text-[11px] text-[#6b7280] mt-0.5 truncate">
-                  {alert.desc}
-                </p>
+                <div className="min-w-0 flex-1">
+
+                  <div className="flex items-center justify-between gap-2">
+                    <h3 className="text-[12px] font-semibold text-[#111827] truncate">
+                      {alert.title}
+                    </h3>
+                    {alert.isNew ? (
+                      <span className="shrink-0 bg-[#fdeaea] text-[#dc2626] text-[9px] font-bold px-1.5 py-0.5 rounded-full">
+                        New
+                      </span>
+                    ) : (
+                      <span className="shrink-0 text-[10px] text-[#9ca3af]">
+                        {alert.timeAgo}
+                      </span>
+                    )}
+                  </div>
+
+                  <p className="text-[11px] text-[#6b7280] mt-0.5 truncate">
+                    {alert.desc}
+                  </p>
+
+                </div>
 
               </div>
 
-            </div>
+            ))}
 
-          ))}
+          </div>
 
-        </div>
+        )}
 
       </div>
 
-      {/* COMMUNITY */}
+      {/* FROM THE COMMUNITY */}
 
       <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
 
@@ -80,79 +142,76 @@ function RightSidebar() {
           <h2 className="text-[14px] font-bold text-[#111827]">
             From the Community
           </h2>
-          <span className="text-[#2563eb] text-[12px] font-semibold cursor-pointer">
+          <Link to="/community" className="text-[#2563eb] text-[12px] font-semibold hover:underline">
             View All
-          </span>
+          </Link>
         </div>
 
-        <div className="flex items-center gap-2.5">
+        {loading ? (
 
-          <img
-            src="https://images.unsplash.com/photo-1633332755192-727a05c4013d?q=80&w=200&auto=format&fit=crop"
-            alt="Rohit Backpacker"
-            className="w-[32px] h-[32px] rounded-full object-cover"
-          />
+          <p className="text-[12px] text-[#9ca3af]">Loading...</p>
 
-          <div>
-            <h3 className="text-[12px] font-semibold text-[#111827]">
-              Rohit Backpacker
-            </h3>
-            <p className="text-[10px] text-[#9ca3af]">
-              Manali Trip · 2h ago
-            </p>
-          </div>
+        ) : !latestPost ? (
 
-        </div>
+          <p className="text-[12px] text-[#9ca3af]">
+            No posts yet — be the first to{" "}
+            <Link to="/share-experience" className="text-[#2563eb] underline">share</Link> one!
+          </p>
 
-        <p className="mt-2.5 text-[12px] text-[#374151] leading-4.5">
-          Just completed the Manali trip in ₹3500. Here's my 3 day complete budget breakdown...
-        </p>
+        ) : (
 
-        <div className="mt-2.5 grid grid-cols-3 gap-1.5">
+          <>
 
-          <img
-            src="https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=200&auto=format&fit=crop"
-            alt="trip photo"
-            className="w-full h-[52px] object-cover rounded-lg"
-          />
+            <div className="flex items-center gap-2.5">
 
-          <img
-            src="https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=200&auto=format&fit=crop"
-            alt="trip photo"
-            className="w-full h-[52px] object-cover rounded-lg"
-          />
+              <img
+                src={latestPost.author?.avatar_url || DEFAULT_AVATAR}
+                alt={latestPost.author?.name || "Traveler"}
+                className="w-[32px] h-[32px] rounded-full object-cover"
+              />
 
-          <div className="relative w-full h-[52px] rounded-lg overflow-hidden">
+              <div className="min-w-0">
+                <h3 className="text-[12px] font-semibold text-[#111827] truncate">
+                  {latestPost.author?.name || "Traveler"}
+                </h3>
+                <p className="text-[10px] text-[#9ca3af] truncate">
+                  {latestPost.location ? `${latestPost.location} · ` : ""}{timeAgo(latestPost.created_at)}
+                </p>
+              </div>
 
-            <img
-              src="https://images.unsplash.com/photo-1524492412937-b28074a5d7da?q=80&w=200&auto=format&fit=crop"
-              alt="trip photo"
-              className="w-full h-full object-cover"
-            />
-
-            <div className="absolute inset-0 bg-black/40 flex items-center justify-center text-white text-[10px] font-semibold cursor-pointer">
-              Read More
             </div>
 
-          </div>
+            <p className="mt-2.5 text-[12px] text-[#374151] leading-4.5 line-clamp-3">
+              {latestPost.content}
+            </p>
 
-        </div>
+            {latestPost.image_url && (
+              <img
+                src={latestPost.image_url}
+                alt={latestPost.title}
+                className="mt-2.5 w-full h-[110px] object-cover rounded-lg"
+              />
+            )}
 
-        <div className="mt-3 flex items-center gap-4 text-[#6b7280] text-[12px]">
+            <div className="mt-3 flex items-center gap-4 text-[#6b7280] text-[12px]">
 
-          <span className="flex items-center gap-1 cursor-pointer hover:text-[#dc2626]">
-            <FaHeart className="text-[12px]" /> 128
-          </span>
+              <span className="flex items-center gap-1">
+                <FaHeart className="text-[12px]" /> {latestPost.likes_count || 0}
+              </span>
 
-          <span className="flex items-center gap-1 cursor-pointer hover:text-[#2563eb]">
-            <FaRegComment className="text-[12px]" /> 32
-          </span>
+              <span className="flex items-center gap-1">
+                <FaRegComment className="text-[12px]" /> 0
+              </span>
 
-          <span className="flex items-center gap-1 cursor-pointer hover:text-[#2563eb]">
-            <FaShare className="text-[12px]" /> 15
-          </span>
+              <span className="flex items-center gap-1">
+                <FaShare className="text-[12px]" /> 0
+              </span>
 
-        </div>
+            </div>
+
+          </>
+
+        )}
 
       </div>
 

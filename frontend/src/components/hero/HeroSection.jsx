@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import heroBg from "../../assets/hero/hero-bg.jpg";
 import LocationAutocomplete from "./LocationAutocomplete";
@@ -10,6 +10,21 @@ function HeroSection() {
 
   const [activeTab, setActiveTab] = useState("destinations");
   const [search, setSearch] = useState("");
+
+  // "Find Places" in QuickActions dispatches this — switch to the
+  // Destinations tab, scroll it into view, and focus the input.
+  useEffect(() => {
+    const handleFocusRequest = () => {
+      setActiveTab("destinations");
+      setSearch("");
+      setTimeout(() => {
+        document.getElementById("hero-search-card")?.scrollIntoView({ behavior: "smooth", block: "center" });
+        document.querySelector("#hero-search-row input")?.focus();
+      }, 50);
+    };
+    window.addEventListener("focus-destination-search", handleFocusRequest);
+    return () => window.removeEventListener("focus-destination-search", handleFocusRequest);
+  }, []);
 
   const placeholders = {
     destinations: "Where do you want to go?",
@@ -70,7 +85,7 @@ function HeroSection() {
             Real travelers. Real experiences. Real help.
           </p>
 
-          <div className="mt-5 w-full max-w-[520px] bg-white rounded-[20px] p-4">
+          <div id="hero-search-card" className="mt-5 w-full max-w-[520px] bg-white rounded-[20px] p-4">
             {/* Tabs */}
 
             <div className="flex items-center gap-2">
@@ -96,7 +111,7 @@ function HeroSection() {
 
             {/* Search */}
 
-            <div className="mt-3 flex items-center gap-2">
+            <div id="hero-search-row" className="mt-3 flex items-center gap-2">
 
               {activeTab === "destinations" && (
 
