@@ -12,6 +12,7 @@ from app.routes.post_routes import router as post_router
 from app.routes.search_routes import router as search_router
 from app.routes.upload_routes import router as upload_router
 from app.routes.story_routes import router as story_router
+from app.routes.newsletter_routes import router as newsletter_router  
 
 Base.metadata.create_all(bind=engine)
 
@@ -36,7 +37,7 @@ app.include_router(post_router)
 app.include_router(search_router)
 app.include_router(upload_router)
 app.include_router(story_router)
-
+app.include_router(newsletter_router)
 
 @app.get("/")
 def home():
