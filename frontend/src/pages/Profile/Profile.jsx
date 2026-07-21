@@ -28,7 +28,7 @@ function mapPost(p) {
     id: p.id,
     author: p.author?.name || "Traveler",
     authorId: p.author?.id ?? null,
-    avatar: DEFAULT_AVATAR,
+    avatar: p.author?.avatar_url || DEFAULT_AVATAR,
     location: p.location || "Unknown",
     createdAt: p.created_at,
     timeAgo: timeAgo(p.created_at),
