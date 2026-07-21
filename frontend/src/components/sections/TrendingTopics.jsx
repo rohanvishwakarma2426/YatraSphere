@@ -3,8 +3,6 @@ import axios from "axios"
 import { FaFire } from "react-icons/fa"
 import { getCategoryLabel } from "../../utils/postCategories"
 
-// Real trending topics — grouped from actual posts by category, most
-// discussed first. No hardcoded/dummy topics.
 function TrendingTopics() {
 
   const [topics, setTopics] = useState([])
@@ -40,28 +38,28 @@ function TrendingTopics() {
 
   return (
 
-    <div className="bg-white rounded-2xl p-5 shadow-sm border border-[#ececec]">
+    <div className="bg-white dark:bg-gray-900 rounded-2xl p-5 shadow-sm border border-[#ececec] dark:border-gray-800">
 
       <div className="flex items-center justify-between mb-3">
-        <h2 className="text-[14px] font-bold text-[#111827] flex items-center gap-1.5">
+        <h2 className="text-[14px] font-bold text-[#111827] dark:text-gray-100 flex items-center gap-1.5">
           <FaFire className="text-[#f97316] text-[13px]" />
           Trending Topics
         </h2>
       </div>
 
       {loading ? (
-        <p className="text-[12px] text-[#9ca3af]">Loading...</p>
+        <p className="text-[12px] text-[#9ca3af] dark:text-gray-500">Loading...</p>
       ) : topics.length > 0 ? (
         <div className="space-y-3">
           {topics.map((topic) => (
             <div key={topic.title}>
-              <h3 className="text-[12.5px] font-medium text-[#111827] leading-4.5">{topic.title}</h3>
-              <p className="text-[11px] text-[#9ca3af] mt-0.5">{topic.count} post{topic.count === 1 ? "" : "s"}</p>
+              <h3 className="text-[12.5px] font-medium text-[#111827] dark:text-gray-100 leading-4.5">{topic.title}</h3>
+              <p className="text-[11px] text-[#9ca3af] dark:text-gray-500 mt-0.5">{topic.count} post{topic.count === 1 ? "" : "s"}</p>
             </div>
           ))}
         </div>
       ) : (
-        <p className="text-[12px] text-[#9ca3af]">No posts yet — be the first to start a topic!</p>
+        <p className="text-[12px] text-[#9ca3af] dark:text-gray-500">No posts yet — be the first to start a topic!</p>
       )}
 
     </div>

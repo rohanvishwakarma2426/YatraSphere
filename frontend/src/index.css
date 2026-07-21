@@ -16,8 +16,17 @@ html, body {
 body {
   background: #f5f7fb;
   font-family: Arial, Helvetica, sans-serif;
+  transition: background 0.2s ease;
+}
+
+html.dark body {
+  background: #0b1120;
 }
 
 #root {
   overflow-x: clip;
+}
+
+.scrollbar-hide::-webkit-scrollbar {
+  display: none;
 }

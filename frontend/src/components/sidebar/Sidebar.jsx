@@ -35,7 +35,6 @@ function Sidebar() {
   const { pathname } = useLocation()
   const { isOpen, closeSidebar } = useSidebar()
 
-  // Auto-close the mobile drawer whenever the user navigates to a new page.
   useEffect(() => {
     closeSidebar()
     // eslint-disable-next-line react-hooks/exhaustive-deps
@@ -45,8 +44,6 @@ function Sidebar() {
 
     <>
 
-      {/* BACKDROP (mobile only, shown while drawer is open) */}
-
       {isOpen && (
         <div
           onClick={closeSidebar}
@@ -55,7 +52,7 @@ function Sidebar() {
       )}
 
       <div
-        className={`fixed inset-y-0 left-0 z-50 w-[260px] overflow-y-auto bg-[#f5f6fa] transform transition-transform duration-300 ease-in-out px-4 py-4
+        className={`fixed inset-y-0 left-0 z-50 w-[260px] overflow-y-auto bg-[#f5f6fa] dark:bg-[#0b1120] transform transition-transform duration-300 ease-in-out px-4 py-4
           ${isOpen ? "translate-x-0" : "-translate-x-full"}
           lg:static lg:z-auto lg:translate-x-0 lg:w-[220px] lg:shrink-0 lg:min-h-screen`}
       >
@@ -64,14 +61,14 @@ function Sidebar() {
 
         <button
           onClick={closeSidebar}
-          className="lg:hidden mb-3 ml-auto flex w-[32px] h-[32px] items-center justify-center rounded-full bg-white border border-[#ececec] text-[#4b5563]"
+          className="lg:hidden mb-3 ml-auto flex w-[32px] h-[32px] items-center justify-center rounded-full bg-white dark:bg-gray-900 border border-[#ececec] dark:border-gray-800 text-[#4b5563] dark:text-gray-300"
         >
           <FaTimes className="text-[13px]" />
         </button>
 
         {/* MENU */}
 
-        <div className="bg-white rounded-2xl p-3.5 shadow-sm border border-[#ececec]">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl p-3.5 shadow-sm border border-[#ececec] dark:border-gray-800">
 
           <div className="space-y-0.5">
 
@@ -97,8 +94,8 @@ function Sidebar() {
 
               const className = `flex items-center gap-3 px-3 py-2.5 rounded-xl cursor-pointer transition ${
                 active
-                  ? "bg-[#edf3ff] text-[#2563eb] font-semibold"
-                  : "text-[#4b5563] hover:bg-[#f7f8fb]"
+                  ? "bg-[#edf3ff] dark:bg-blue-500/10 text-[#2563eb] dark:text-blue-400 font-semibold"
+                  : "text-[#4b5563] dark:text-gray-300 hover:bg-[#f7f8fb] dark:hover:bg-gray-800"
               }`
 
               return path ? (
@@ -117,7 +114,7 @@ function Sidebar() {
 
         </div>
 
-        {/* PREMIUM CARD */}
+        {/* PREMIUM CARD — kept as-is, gradient already looks good in dark mode */}
 
         <div className="mt-4 bg-gradient-to-br from-[#7c3aed] to-[#2563eb] rounded-2xl p-5 text-white">
 
@@ -141,7 +138,7 @@ function Sidebar() {
 
         </div>
 
-        {/* APP CARD */}
+        {/* APP CARD — already dark (#111827), fine in both modes */}
 
         <div className="mt-4 bg-[#111827] rounded-2xl p-5 text-white">
 

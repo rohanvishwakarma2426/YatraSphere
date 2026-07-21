@@ -33,7 +33,7 @@ export default function Footer() {
       <div className="max-w-7xl mx-auto px-6 lg:px-10 py-14">
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-6 gap-10">
           <div className="col-span-2">
-            <img src={theme === "dark" ? logoDark : logoLight} alt="YatraSphere" className="h-8 mb-4" />
+            <img src={theme === "dark" ? logoDark : logoLight} alt="YatraSphere" className="w-[100px] h-auto object-contain mb-4" />
             <p className="text-sm text-gray-500 dark:text-gray-400 leading-relaxed mb-4">
               Your all-in-one travel companion. Explore new places, plan smart budgets, share real experiences, and get the best deals for your next adventure.
             </p>

@@ -2,11 +2,12 @@ import Navbar from "../../components/navbar/Navbar"
 import Sidebar from "../../components/sidebar/Sidebar"
 import RightSidebar from "../../components/sidebar/RightSidebar"
 import HeroSection from "../../components/hero/HeroSection"
-import QuickActions from "../../components/sections/QuickActions"
 import PopularDestinations from "../../components/sections/PopularDestinations"
 import TopCategories from "../../components/sections/TopCategories"
 import WhyYatraSphere from "../../components/sections/WhyYatraSphere"
-import QuickActionsCarousel from "../../components/home/QuickActionsCarousel";
+import QuickActionsCarousel from "../../components/home/QuickActionsCarousel"
+import Footer from "../../components/footer/Footer"
+
 function Home() {
 
   return (
@@ -29,15 +30,14 @@ function Home() {
 
             <HeroSection />
 
-            <QuickActions />
+            <QuickActionsCarousel />
 
             <PopularDestinations />
 
             <TopCategories />
 
             <WhyYatraSphere />
-            
-            <QuickActionsCarousel />
+
           </div>
 
           <RightSidebar />
@@ -45,6 +45,8 @@ function Home() {
         </div>
 
       </div>
+
+      <Footer />
 
     </div>
 

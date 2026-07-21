@@ -23,7 +23,6 @@ function timeAgo(dateString) {
   return `${days}d ago`
 }
 
-// Maps backend PostOut -> the shape <PostCard /> expects.
 function mapPost(p) {
   return {
     id: p.id,
@@ -40,7 +39,6 @@ function mapPost(p) {
     likes: p.likes_count,
     comments: 0,
     shares: 0,
-    // keep raw fields around for the edit form
     _raw: p,
   }
 }
@@ -60,7 +58,7 @@ function Profile() {
   const [avatarUploading, setAvatarUploading] = useState(false)
   const [savingProfile, setSavingProfile] = useState(false)
 
-  const [editingPost, setEditingPost] = useState(null) // holds post._raw being edited
+  const [editingPost, setEditingPost] = useState(null)
 
   const refreshPosts = () => {
     setLoading(true)
@@ -83,8 +81,6 @@ function Profile() {
   }, [user])
 
   if (!user) return null
-
-  // ============ PROFILE EDIT ============
 
   const handleAvatarPick = async (e) => {
     const file = e.target.files?.[0]
@@ -123,8 +119,6 @@ function Profile() {
     }
   }
 
-  // ============ POST DELETE ============
-
   const handleDeletePost = async (post) => {
     if (!confirm(`Delete "${post.title || "this post"}"? This can't be undone.`)) return
 
@@ -136,8 +130,6 @@ function Profile() {
       alert("Failed to delete post. Please try again.")
     }
   }
-
-  // ============ POST EDIT ============
 
   const handleEditPost = (post) => setEditingPost(post._raw)
 
@@ -166,7 +158,7 @@ function Profile() {
 
           {/* PROFILE HEADER */}
 
-          <div className="bg-white rounded-2xl border border-[#ececec] shadow-sm p-6">
+          <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#ececec] dark:border-gray-800 shadow-sm p-6">
 
             <div className="flex items-start gap-4">
 
@@ -175,7 +167,7 @@ function Profile() {
                 <img
                   src={user.avatar_url || DEFAULT_AVATAR}
                   alt={user.name}
-                  className="w-[84px] h-[84px] rounded-full object-cover border border-[#ececec]"
+                  className="w-[84px] h-[84px] rounded-full object-cover border border-[#ececec] dark:border-gray-800"
                 />
 
                 <label className="absolute -bottom-1 -right-1 w-[28px] h-[28px] bg-[#2563eb] rounded-full flex items-center justify-center cursor-pointer hover:bg-[#1d4ed8] transition">
@@ -194,14 +186,14 @@ function Profile() {
                 {!editingProfile ? (
 
                   <>
-                    <h1 className="text-[18px] font-bold text-[#111827]">{user.name}</h1>
-                    <p className="text-[12.5px] text-[#9ca3af] mt-0.5">{user.email}</p>
-                    <p className="text-[13px] text-[#374151] mt-2">
-                      {user.bio || <span className="text-[#9ca3af] italic">No bio yet.</span>}
+                    <h1 className="text-[18px] font-bold text-[#111827] dark:text-gray-100">{user.name}</h1>
+                    <p className="text-[12.5px] text-[#9ca3af] dark:text-gray-500 mt-0.5">{user.email}</p>
+                    <p className="text-[13px] text-[#374151] dark:text-gray-300 mt-2">
+                      {user.bio || <span className="text-[#9ca3af] dark:text-gray-500 italic">No bio yet.</span>}
                     </p>
                     <button
                       onClick={() => { setName(user.name); setBio(user.bio || ""); setEditingProfile(true) }}
-                      className="mt-3 h-[32px] px-4 rounded-lg border border-[#ececec] text-[12.5px] font-semibold text-[#374151] hover:bg-[#f5f7fb] transition"
+                      className="mt-3 h-[32px] px-4 rounded-lg border border-[#ececec] dark:border-gray-700 text-[12.5px] font-semibold text-[#374151] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800 transition"
                     >
                       Edit Profile
                     </button>
@@ -215,7 +207,7 @@ function Profile() {
                       value={name}
                       onChange={(e) => setName(e.target.value)}
                       placeholder="Your name"
-                      className="h-[36px] border border-[#ececec] rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
+                      className="h-[36px] bg-white dark:bg-gray-800 text-[#111827] dark:text-gray-100 border border-[#ececec] dark:border-gray-700 rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
                     />
 
                     <textarea
@@ -224,7 +216,7 @@ function Profile() {
                       placeholder="A short bio..."
                       rows={2}
                       maxLength={300}
-                      className="border border-[#ececec] rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#2563eb] resize-none"
+                      className="bg-white dark:bg-gray-800 text-[#111827] dark:text-gray-100 border border-[#ececec] dark:border-gray-700 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#2563eb] resize-none"
                     />
 
                     <div className="flex items-center gap-2">
@@ -237,7 +229,7 @@ function Profile() {
                       </button>
                       <button
                         onClick={() => setEditingProfile(false)}
-                        className="h-[32px] px-4 rounded-lg border border-[#ececec] text-[12.5px] font-semibold text-[#374151] hover:bg-[#f5f7fb] transition"
+                        className="h-[32px] px-4 rounded-lg border border-[#ececec] dark:border-gray-700 text-[12.5px] font-semibold text-[#374151] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800 transition"
                       >
                         Cancel
                       </button>
@@ -255,24 +247,24 @@ function Profile() {
 
           {/* MY POSTS */}
 
-          <h2 className="text-[14px] font-semibold text-[#111827] mt-1">My Posts</h2>
+          <h2 className="text-[14px] font-semibold text-[#111827] dark:text-gray-100 mt-1">My Posts</h2>
 
           {loading && (
-            <div className="flex items-center gap-2 text-[#6b7280] text-[13px] py-10 justify-center">
+            <div className="flex items-center gap-2 text-[#6b7280] dark:text-gray-400 text-[13px] py-10 justify-center">
               <FaSpinner className="animate-spin" /> Loading your posts...
             </div>
           )}
 
           {loadError && (
-            <div className="bg-[#fdeaea] border border-[#f3a9a9] rounded-xl px-4 py-2.5 text-[12.5px] text-[#dc2626]">
+            <div className="bg-[#fdeaea] dark:bg-red-500/10 border border-[#f3a9a9] dark:border-red-500/30 rounded-xl px-4 py-2.5 text-[12.5px] text-[#dc2626] dark:text-red-400">
               {loadError}
             </div>
           )}
 
           {!loading && posts.length === 0 && !loadError && (
-            <div className="bg-white rounded-2xl border border-[#ececec] p-8 text-center text-[#6b7280] text-[13px]">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#ececec] dark:border-gray-800 p-8 text-center text-[#6b7280] dark:text-gray-400 text-[13px]">
               You haven't posted anything yet. Head to{" "}
-              <a href="/share-experience" className="text-[#2563eb] underline font-semibold">Share Experience</a> to create one.
+              <a href="/share-experience" className="text-[#2563eb] dark:text-blue-400 underline font-semibold">Share Experience</a> to create one.
             </div>
           )}
 
@@ -283,8 +275,6 @@ function Profile() {
         </div>
 
       </div>
-
-      {/* EDIT POST MODAL */}
 
       {editingPost && (
         <EditPostModal
@@ -299,7 +289,6 @@ function Profile() {
   )
 }
 
-// Small inline modal — kept in this file since it's only ever used here.
 function EditPostModal({ post, onClose, onSave }) {
 
   const [title, setTitle] = useState(post.title)
@@ -322,11 +311,11 @@ function EditPostModal({ post, onClose, onSave }) {
 
     <div className="fixed inset-0 bg-black/50 z-50 flex items-center justify-center p-4">
 
-      <div className="bg-white rounded-2xl w-full max-w-[480px] p-5 max-h-[85vh] overflow-y-auto">
+      <div className="bg-white dark:bg-gray-900 rounded-2xl w-full max-w-[480px] p-5 max-h-[85vh] overflow-y-auto">
 
         <div className="flex items-center justify-between mb-3">
-          <h3 className="text-[15px] font-semibold text-[#111827]">Edit Post</h3>
-          <button onClick={onClose} className="text-[#9ca3af] hover:text-[#111827]">
+          <h3 className="text-[15px] font-semibold text-[#111827] dark:text-gray-100">Edit Post</h3>
+          <button onClick={onClose} className="text-[#9ca3af] dark:text-gray-500 hover:text-[#111827] dark:hover:text-gray-200">
             <FaTimes />
           </button>
         </div>
@@ -337,7 +326,7 @@ function EditPostModal({ post, onClose, onSave }) {
             value={title}
             onChange={(e) => setTitle(e.target.value)}
             placeholder="Title"
-            className="h-[38px] border border-[#ececec] rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
+            className="h-[38px] bg-white dark:bg-gray-800 text-[#111827] dark:text-gray-100 border border-[#ececec] dark:border-gray-700 rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
           />
 
           <textarea
@@ -345,20 +334,20 @@ function EditPostModal({ post, onClose, onSave }) {
             onChange={(e) => setContent(e.target.value)}
             placeholder="Content"
             rows={4}
-            className="border border-[#ececec] rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#2563eb] resize-none"
+            className="bg-white dark:bg-gray-800 text-[#111827] dark:text-gray-100 border border-[#ececec] dark:border-gray-700 rounded-lg px-3 py-2 text-[13px] outline-none focus:border-[#2563eb] resize-none"
           />
 
           <input
             value={location}
             onChange={(e) => setLocation(e.target.value)}
             placeholder="Location"
-            className="h-[38px] border border-[#ececec] rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
+            className="h-[38px] bg-white dark:bg-gray-800 text-[#111827] dark:text-gray-100 border border-[#ececec] dark:border-gray-700 rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
           />
 
           <select
             value={category}
             onChange={(e) => setCategory(e.target.value)}
-            className="h-[38px] border border-[#ececec] rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
+            className="h-[38px] bg-white dark:bg-gray-800 text-[#111827] dark:text-gray-100 border border-[#ececec] dark:border-gray-700 rounded-lg px-3 text-[13px] outline-none focus:border-[#2563eb]"
           >
             {POST_CATEGORIES.map((c) => (
               <option key={c.key} value={c.key}>{c.label}</option>
@@ -375,7 +364,7 @@ function EditPostModal({ post, onClose, onSave }) {
             </button>
             <button
               onClick={onClose}
-              className="h-[34px] px-4 rounded-lg border border-[#ececec] text-[12.5px] font-semibold text-[#374151] hover:bg-[#f5f7fb] transition"
+              className="h-[34px] px-4 rounded-lg border border-[#ececec] dark:border-gray-700 text-[12.5px] font-semibold text-[#374151] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800 transition"
             >
               Cancel
             </button>

@@ -11,8 +11,6 @@ function HeroSection() {
   const [activeTab, setActiveTab] = useState("destinations");
   const [search, setSearch] = useState("");
 
-  // "Find Places" in QuickActions dispatches this — switch to the
-  // Destinations tab, scroll it into view, and focus the input.
   useEffect(() => {
     const handleFocusRequest = () => {
       setActiveTab("destinations");
@@ -85,7 +83,7 @@ function HeroSection() {
             Real travelers. Real experiences. Real help.
           </p>
 
-          <div id="hero-search-card" className="mt-5 w-full max-w-[520px] bg-white rounded-[20px] p-4">
+          <div id="hero-search-card" className="mt-5 w-full max-w-[520px] bg-white dark:bg-gray-900 rounded-[20px] p-4">
             {/* Tabs */}
 
             <div className="flex items-center gap-2">
@@ -100,8 +98,8 @@ function HeroSection() {
                   className={`px-4 h-[36px] rounded-xl text-[13px] transition-all duration-300
                     ${
                       activeTab === tab.id
-                        ? "bg-[#edf3ff] text-[#2563eb] font-semibold shadow-sm"
-                        : "text-[#555] hover:bg-[#f5f7fb]"
+                        ? "bg-[#edf3ff] dark:bg-blue-500/10 text-[#2563eb] dark:text-blue-400 font-semibold shadow-sm"
+                        : "text-[#555] dark:text-gray-400 hover:bg-[#f5f7fb] dark:hover:bg-gray-800"
                     }`}
                 >
                   {tab.label}

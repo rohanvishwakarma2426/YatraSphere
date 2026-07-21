@@ -34,8 +34,9 @@ import profile from "../../assets/navbar/profile.png"
 import { useSidebar } from "../../hooks/useSidebar"
 import { useAuth } from "../../hooks/useAuth"
 import SearchBar from "./SearchBar"
-import SettingsMenu from "./SettingsMenu";
-
+import SettingsMenu from "./SettingsMenu"
+import logoDark from "../../assets/logo-dark.png";
+import { useTheme } from "../../context/ThemeContext"  
 
 const NAV_ITEMS = [
   { label: "Explore", icon: HiOutlineMap, path: "/" },
@@ -52,6 +53,7 @@ function Navbar() {
   const { user, logout } = useAuth()
   const navigate = useNavigate()
   const [profileOpen, setProfileOpen] = useState(false)
+  const { theme } = useTheme()
 
   const handleLogout = () => {
     logout()
@@ -61,15 +63,15 @@ function Navbar() {
 
   return (
 
-    <div className="w-full px-1 pt-1 sticky top-0 z-30 bg-[#f5f7fb]">
+    <div className="w-full px-1 pt-1 sticky top-0 z-30 bg-[#f5f7fb] dark:bg-[#0b1120]">
 
-      <div className="w-full h-[54px] bg-white border border-[#ececec] rounded-[16px] shadow-sm flex items-center px-3 lg:px-0">
+      <div className="w-full h-[54px] bg-white dark:bg-gray-900 border border-[#ececec] dark:border-gray-800 rounded-[16px] shadow-sm flex items-center px-3 lg:px-0">
 
         {/* HAMBURGER (mobile only) */}
 
         <button
           onClick={toggleSidebar}
-          className="lg:hidden mr-2 w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb] transition"
+          className="lg:hidden mr-2 w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center text-[#4b5563] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800 transition"
         >
           <FaBars className="text-[16px]" />
         </button>
@@ -77,10 +79,10 @@ function Navbar() {
         {/* LOGO */}
 
         <img
-          src={logo}
-          alt="logo"
-          className="w-[100px] h-[70] p-30 object-contain shrink-0"
-        />
+  src={theme === "dark" ? logoDark : logo}
+  alt="logo"
+  className="w-[100px] h-[70] p-30 object-contain shrink-0"
+/>
         {/* SEARCH (hidden on mobile to avoid overflow) */}
 
         <SearchBar />
@@ -95,8 +97,8 @@ function Navbar() {
 
             const className = `flex items-center gap-1.5 cursor-pointer whitespace-nowrap transition ${
               active
-                ? "text-[#2563eb] font-semibold"
-                : "text-[#4b5563] hover:text-[#2563eb]"
+                ? "text-[#2563eb] dark:text-blue-400 font-semibold"
+                : "text-[#4b5563] dark:text-gray-300 hover:text-[#2563eb] dark:hover:text-blue-400"
             }`
 
             const content = (
@@ -142,7 +144,7 @@ function Navbar() {
           {/* NOTIFICATION */}
 
           <div className="relative cursor-pointer shrink-0">
-            <FaBell className="text-[18px] text-[#4b5563]" />
+            <FaBell className="text-[18px] text-[#4b5563] dark:text-gray-300" />
             <div className="absolute -top-1.5 -right-1.5 w-[16px] h-[16px] bg-red-500 rounded-full flex items-center justify-center text-white text-[9px] font-bold">
               3
             </div>
@@ -165,7 +167,7 @@ function Navbar() {
                 className="w-[36px] h-[36px] rounded-full object-cover"
               />
 
-              <span className="hidden lg:block text-[13px] font-medium text-[#374151] max-w-[100px] truncate">
+              <span className="hidden lg:block text-[13px] font-medium text-[#374151] dark:text-gray-200 max-w-[100px] truncate">
                 {user ? user.name : "Guest"}
               </span>
 
@@ -180,13 +182,13 @@ function Navbar() {
                   className="fixed inset-0 z-10"
                 />
 
-                <div className="absolute right-0 top-[46px] w-[200px] bg-white rounded-xl border border-[#ececec] shadow-lg py-2 z-20">
+                <div className="absolute right-0 top-[46px] w-[200px] bg-white dark:bg-gray-900 rounded-xl border border-[#ececec] dark:border-gray-800 shadow-lg py-2 z-20">
 
-                  <div className="px-4 py-2 border-b border-[#f0f0f0]">
-                    <p className="text-[13px] font-semibold text-[#111827] truncate">
+                  <div className="px-4 py-2 border-b border-[#f0f0f0] dark:border-gray-800">
+                    <p className="text-[13px] font-semibold text-[#111827] dark:text-gray-100 truncate">
                       {user ? user.name : "Guest"}
                     </p>
-                    <p className="text-[11px] text-[#9ca3af] truncate">
+                    <p className="text-[11px] text-[#9ca3af] dark:text-gray-500 truncate">
                       {user ? user.email : "Not logged in"}
                     </p>
                   </div>
@@ -196,14 +198,14 @@ function Navbar() {
                       <Link
                         to="/profile"
                         onClick={() => setProfileOpen(false)}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#374151] hover:bg-[#f5f7fb] transition"
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#374151] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800 transition"
                       >
                         <FaUser className="text-[12px]" />
                         My Profile
                       </Link>
                       <button
                         onClick={handleLogout}
-                        className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#dc2626] hover:bg-[#fdeaea] transition"
+                        className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#dc2626] dark:text-red-400 hover:bg-[#fdeaea] dark:hover:bg-red-500/10 transition"
                       >
                         <FaSignOutAlt className="text-[12px]" />
                         Logout
@@ -213,7 +215,7 @@ function Navbar() {
                     <Link
                       to="/login"
                       onClick={() => setProfileOpen(false)}
-                      className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#2563eb] hover:bg-[#eef4ff] transition"
+                      className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#2563eb] dark:text-blue-400 hover:bg-[#eef4ff] dark:hover:bg-blue-500/10 transition"
                     >
                       <FaSignInAlt className="text-[12px]" />
                       Login

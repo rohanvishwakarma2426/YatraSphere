@@ -3,9 +3,6 @@ import { useNavigate } from "react-router-dom"
 import axios from "axios"
 import { FaStar, FaChevronRight, FaChevronLeft, FaSpinner } from "react-icons/fa"
 
-// Curated look (image/region/tag) for well-known cities — used purely for
-// visuals. Which destinations actually SHOW and in what ORDER is driven
-// entirely by real post counts fetched below, not by this list.
 const DESTINATION_LOOKS = {
   manali: { region: "Himachal Pradesh", tag: "Budget Friendly", tagColor: "bg-[#2563eb]", image: "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?q=80&w=600&auto=format&fit=crop" },
   kasol: { region: "Himachal Pradesh", tag: "Hidden Gem", tagColor: "bg-[#7c3aed]", image: "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?q=80&w=600&auto=format&fit=crop" },
@@ -38,8 +35,6 @@ function PopularDestinations() {
       .then((res) => {
         if (cancelled) return
 
-        // Group posts by location (case-insensitive, trimmed) and count —
-        // more posts about a place = more "popular", highest count first.
         const counts = {}
 
         for (const p of res.data) {
@@ -78,13 +73,13 @@ function PopularDestinations() {
 
       <div className="flex items-center justify-between mb-3">
 
-        <h2 className="text-[18px] font-bold text-[#111827]">
+        <h2 className="text-[18px] font-bold text-[#111827] dark:text-gray-100">
           Popular Destinations 🔥
         </h2>
 
         <span
           onClick={() => navigate("/explore")}
-          className="text-[#2563eb] text-[13px] font-semibold cursor-pointer hover:underline"
+          className="text-[#2563eb] dark:text-blue-400 text-[13px] font-semibold cursor-pointer hover:underline"
         >
           View All
         </span>
@@ -93,13 +88,13 @@ function PopularDestinations() {
 
       {loading ? (
 
-        <div className="flex items-center gap-2 text-[#6b7280] text-[13px] py-8 justify-center">
+        <div className="flex items-center gap-2 text-[#6b7280] dark:text-gray-400 text-[13px] py-8 justify-center">
           <FaSpinner className="animate-spin" /> Loading destinations...
         </div>
 
       ) : destinations.length === 0 ? (
 
-        <div className="bg-white rounded-2xl border border-[#ececec] p-8 text-center text-[#6b7280] text-[13px]">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#ececec] dark:border-gray-800 p-8 text-center text-[#6b7280] dark:text-gray-400 text-[13px]">
           No destinations yet — posts tagged with a location will show up here.
         </div>
 
@@ -159,14 +154,14 @@ function PopularDestinations() {
 
           <button
             onClick={() => scroll(-1)}
-            className="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 w-[32px] h-[32px] bg-white rounded-full shadow-md items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb]"
+            className="hidden md:flex absolute -left-3 top-1/2 -translate-y-1/2 w-[32px] h-[32px] bg-white dark:bg-gray-800 rounded-full shadow-md items-center justify-center text-[#4b5563] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-700"
           >
             <FaChevronLeft className="text-[12px]" />
           </button>
 
           <button
             onClick={() => scroll(1)}
-            className="absolute -right-3 top-1/2 -translate-y-1/2 w-[32px] h-[32px] bg-white rounded-full shadow-md flex items-center justify-center text-[#4b5563] hover:bg-[#f5f7fb]"
+            className="absolute -right-3 top-1/2 -translate-y-1/2 w-[32px] h-[32px] bg-white dark:bg-gray-800 rounded-full shadow-md flex items-center justify-center text-[#4b5563] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-700"
           >
             <FaChevronRight className="text-[12px]" />
           </button>

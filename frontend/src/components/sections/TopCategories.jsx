@@ -57,19 +57,19 @@ function TopCategories() {
 
     <div>
 
-      <h2 className="text-[18px] font-bold text-[#111827] mb-3">
+      <h2 className="text-[18px] font-bold text-[#111827] dark:text-gray-100 mb-3">
         Top Categories
       </h2>
 
       {loading ? (
 
-        <div className="flex items-center gap-2 text-[#6b7280] text-[13px] py-6 justify-center">
+        <div className="flex items-center gap-2 text-[#6b7280] dark:text-gray-400 text-[13px] py-6 justify-center">
           <FaSpinner className="animate-spin" /> Loading categories...
         </div>
 
       ) : categories.length === 0 ? (
 
-        <div className="bg-white rounded-2xl border border-[#ececec] p-6 text-center text-[#6b7280] text-[13px]">
+        <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#ececec] dark:border-gray-800 p-6 text-center text-[#6b7280] dark:text-gray-400 text-[13px]">
           No categories yet — posts will group here automatically.
         </div>
 
@@ -86,18 +86,18 @@ function TopCategories() {
               <div
                 key={cat.key}
                 onClick={() => handleClick(cat)}
-                className="bg-white rounded-xl border border-[#ececec] shadow-sm p-3 flex items-center gap-2.5 cursor-pointer hover:shadow-md transition"
+                className="bg-white dark:bg-gray-900 rounded-xl border border-[#ececec] dark:border-gray-800 shadow-sm p-3 flex items-center gap-2.5 cursor-pointer hover:shadow-md transition"
               >
 
-                <div className={`w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center ${bg}`}>
+                <div className={`w-[34px] h-[34px] shrink-0 rounded-lg flex items-center justify-center ${bg} dark:bg-opacity-10`}>
                   <Icon className={`text-[14px] ${color}`} />
                 </div>
 
                 <div className="min-w-0">
-                  <h3 className="text-[12.5px] font-semibold text-[#111827] truncate">
+                  <h3 className="text-[12.5px] font-semibold text-[#111827] dark:text-gray-100 truncate">
                     {cat.label}
                   </h3>
-                  <p className="text-[11px] text-[#6b7280]">
+                  <p className="text-[11px] text-[#6b7280] dark:text-gray-400">
                     {cat.count} post{cat.count === 1 ? "" : "s"}
                   </p>
                 </div>

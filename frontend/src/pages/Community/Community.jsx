@@ -254,14 +254,14 @@ function Community() {
 
             {/* TABS */}
 
-            <div className="bg-white rounded-2xl border border-[#ececec] shadow-sm p-1.5 flex items-center gap-1.5 w-fit">
+            <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#ececec] dark:border-gray-800 shadow-sm p-1.5 flex items-center gap-1.5 w-fit">
 
               <button
                 onClick={() => setActiveTab("feed")}
                 className={`px-5 h-[36px] rounded-xl text-[13px] font-semibold transition ${
                   activeTab === "feed"
                     ? "bg-[#2563eb] text-white"
-                    : "text-[#4b5563] hover:bg-[#f5f7fb]"
+                    : "text-[#4b5563] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800"
                 }`}
               >
                 My Feed
@@ -272,7 +272,7 @@ function Community() {
                 className={`px-5 h-[36px] rounded-xl text-[13px] font-semibold transition ${
                   activeTab === "explore"
                     ? "bg-[#2563eb] text-white"
-                    : "text-[#4b5563] hover:bg-[#f5f7fb]"
+                    : "text-[#4b5563] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800"
                 }`}
               >
                 Explore
@@ -281,13 +281,13 @@ function Community() {
             </div>
 
             {loading && (
-              <div className="flex items-center gap-2 text-[#6b7280] text-[13px] py-10 justify-center">
+              <div className="flex items-center gap-2 text-[#6b7280] dark:text-gray-400 text-[13px] py-10 justify-center">
                 <FaSpinner className="animate-spin" /> Loading posts...
               </div>
             )}
 
             {loadError && (
-              <div className="bg-[#fdeaea] border border-[#f3a9a9] rounded-xl px-4 py-2.5 text-[12.5px] text-[#dc2626]">
+              <div className="bg-[#fdeaea] dark:bg-red-500/10 border border-[#f3a9a9] dark:border-red-500/30 rounded-xl px-4 py-2.5 text-[12.5px] text-[#dc2626] dark:text-red-400">
                 {loadError}
               </div>
             )}
@@ -298,7 +298,7 @@ function Community() {
 
                 <StoriesBar stories={stories.map(mapStory)} onAddStory={handleAddStory} uploading={storyUploading} />
 
-                <div className="bg-[#eef4ff] border border-[#dbe7ff] rounded-xl px-4 py-2.5 text-[12px] text-[#2563eb]">
+                <div className="bg-[#eef4ff] dark:bg-blue-500/10 border border-[#dbe7ff] dark:border-blue-500/20 rounded-xl px-4 py-2.5 text-[12px] text-[#2563eb] dark:text-blue-400">
                   Showing posts from locations and people you follow: <span className="font-semibold">{followedLocations.join(", ") || "no locations"}</span>
                   {" "}— want to post? Head to <a href="/share-experience" className="underline font-semibold">Share Experience</a>.
                 </div>
@@ -306,7 +306,7 @@ function Community() {
                 {feedPosts.length > 0 ? (
                   feedPosts.map((post) => <PostCard key={post.id} post={post} />)
                 ) : (
-                  <div className="bg-white rounded-2xl border border-[#ececec] p-8 text-center text-[#6b7280] text-[13px]">
+                  <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#ececec] dark:border-gray-800 p-8 text-center text-[#6b7280] dark:text-gray-400 text-[13px]">
                     You're not following any locations or people with posts yet. Go to Explore, or follow someone from the sidebar.
                   </div>
                 )}
@@ -321,9 +321,9 @@ function Community() {
 
                 {/* SEARCH */}
 
-                <div className="bg-white rounded-2xl border border-[#ececec] shadow-sm p-4">
+                <div className="bg-white dark:bg-gray-900 rounded-2xl border border-[#ececec] dark:border-gray-800 shadow-sm p-4">
 
-                  <div className="flex items-center gap-2 bg-[#f5f7fb] rounded-xl px-4 h-[42px]">
+                  <div className="flex items-center gap-2 bg-[#f5f7fb] dark:bg-gray-800 rounded-xl px-4 h-[42px]">
 
                     <FaSearch className="text-[#9ca3af] text-[13px]" />
 
@@ -332,11 +332,11 @@ function Community() {
                       value={searchQuery}
                       onChange={(e) => setSearchQuery(e.target.value)}
                       placeholder="Search a location to explore its posts (e.g. Jaipur, Udaipur)"
-                      className="flex-1 bg-transparent outline-none text-[13px] text-[#111827] placeholder:text-[#9ca3af]"
+                      className="flex-1 bg-transparent outline-none text-[13px] text-[#111827] dark:text-gray-100 placeholder:text-[#9ca3af] dark:placeholder:text-gray-500"
                     />
 
                     {searchQuery && (
-                      <button onClick={() => setSearchQuery("")} className="text-[#9ca3af] hover:text-[#111827]">
+                      <button onClick={() => setSearchQuery("")} className="text-[#9ca3af] dark:text-gray-500 hover:text-[#111827] dark:hover:text-gray-200">
                         <FaTimes className="text-[13px]" />
                       </button>
                     )}
@@ -349,7 +349,7 @@ function Community() {
                         <button
                           key={loc}
                           onClick={() => setSearchQuery(loc)}
-                          className="text-[11.5px] px-3 h-[28px] rounded-full bg-[#f5f7fb] text-[#4b5563] hover:bg-[#eef4ff] hover:text-[#2563eb] transition"
+                          className="text-[11.5px] px-3 h-[28px] rounded-full bg-[#f5f7fb] dark:bg-gray-800 text-[#4b5563] dark:text-gray-300 hover:bg-[#eef4ff] dark:hover:bg-blue-500/10 hover:text-[#2563eb] dark:hover:text-blue-400 transition"
                         >
                           {loc}
                         </button>
@@ -371,17 +371,17 @@ function Community() {
                     {matchedLocations.map((loc) => (
                       <div
                         key={loc}
-                        className="flex items-center gap-2 bg-white border border-[#ececec] rounded-full pl-3 pr-1.5 h-[34px]"
+                        className="flex items-center gap-2 bg-white dark:bg-gray-900 border border-[#ececec] dark:border-gray-800 rounded-full pl-3 pr-1.5 h-[34px]"
                       >
                         <FaMapMarkerAlt className="text-[11px] text-[#2563eb]" />
-                        <Link to={`/location/${encodeURIComponent(loc)}`} className="text-[12px] text-[#111827] hover:text-[#2563eb] hover:underline transition">
+                        <Link to={`/location/${encodeURIComponent(loc)}`} className="text-[12px] text-[#111827] dark:text-gray-100 hover:text-[#2563eb] dark:hover:text-blue-400 hover:underline transition">
                           {loc}
                         </Link>
                         <button
                           onClick={() => toggleFollow(loc)}
                           className={`text-[10.5px] font-semibold px-2.5 h-[24px] rounded-full transition ${
                             followedLocations.includes(loc)
-                              ? "bg-[#f3f4f6] text-[#4b5563]"
+                              ? "bg-[#f3f4f6] dark:bg-gray-800 text-[#4b5563] dark:text-gray-300"
                               : "bg-[#2563eb] text-white"
                           }`}
                         >
