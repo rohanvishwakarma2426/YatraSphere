@@ -6,7 +6,7 @@ import QuickActions from "../../components/sections/QuickActions"
 import PopularDestinations from "../../components/sections/PopularDestinations"
 import TopCategories from "../../components/sections/TopCategories"
 import WhyYatraSphere from "../../components/sections/WhyYatraSphere"
-
+import QuickActionsCarousel from "../../components/home/QuickActionsCarousel";
 function Home() {
 
   return (
@@ -36,7 +36,8 @@ function Home() {
             <TopCategories />
 
             <WhyYatraSphere />
-
+            
+            <QuickActionsCarousel />
           </div>
 
           <RightSidebar />

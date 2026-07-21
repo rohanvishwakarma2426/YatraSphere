@@ -34,6 +34,8 @@ import profile from "../../assets/navbar/profile.png"
 import { useSidebar } from "../../hooks/useSidebar"
 import { useAuth } from "../../hooks/useAuth"
 import SearchBar from "./SearchBar"
+import SettingsMenu from "./SettingsMenu";
+
 
 const NAV_ITEMS = [
   { label: "Explore", icon: HiOutlineMap, path: "/" },
@@ -140,19 +142,16 @@ function Navbar() {
           {/* NOTIFICATION */}
 
           <div className="relative cursor-pointer shrink-0">
-
             <FaBell className="text-[18px] text-[#4b5563]" />
-
             <div className="absolute -top-1.5 -right-1.5 w-[16px] h-[16px] bg-red-500 rounded-full flex items-center justify-center text-white text-[9px] font-bold">
-
               3
-
             </div>
-
           </div>
 
-          {/* PROFILE */}
+          {/* SETTINGS */}
+          <SettingsMenu />
 
+          {/* PROFILE */}
           <div className="relative shrink-0">
 
             <button
