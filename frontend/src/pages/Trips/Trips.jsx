@@ -176,7 +176,7 @@ function Trips() {
 
           {/* MAIN COLUMN */}
 
-          <div className="flex-1 min-w-0 flex flex-col gap-4">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
 
             {/* HEADER + TABS */}
 

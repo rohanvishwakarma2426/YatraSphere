@@ -80,7 +80,7 @@ function BlogsGuides() {
 
         <div className="flex-1 min-w-0 p-4 flex flex-col xl:flex-row gap-4 items-start">
 
-          <div className="flex-1 min-w-0 flex flex-col gap-4">
+          <div className="flex-1 min-w-0 w-full flex flex-col gap-4">
 
             {/* HEADER */}
 
