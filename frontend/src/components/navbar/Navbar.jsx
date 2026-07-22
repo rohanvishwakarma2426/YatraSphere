@@ -23,6 +23,7 @@ import {
   FaSignOutAlt,
   FaSignInAlt,
   FaUser,
+  FaUserShield,
 } from "react-icons/fa"
 
 import {
@@ -203,6 +204,14 @@ function Navbar() {
                         <FaUser className="text-[12px]" />
                         My Profile
                       </Link>
+                      <Link
+                 to="/admin/login"
+                 onClick={() => setProfileOpen(false)}
+                 className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#374151] dark:text-gray-300 hover:bg-[#f5f7fb] dark:hover:bg-gray-800 transition"
+               >
+                 <FaUserShield className="text-[12px]" />
+                 Admin Login
+              </Link>
                       <button
                         onClick={handleLogout}
                         className="w-full flex items-center gap-2 px-4 py-2.5 text-[13px] text-[#dc2626] dark:text-red-400 hover:bg-[#fdeaea] dark:hover:bg-red-500/10 transition"

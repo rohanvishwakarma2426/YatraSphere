@@ -1,4 +1,4 @@
-from sqlalchemy import Column, Integer, String
+from sqlalchemy import Column, Integer, String, Boolean, DateTime, func
 from app.database.base import Base
 
 class User(Base):
@@ -11,3 +11,5 @@ class User(Base):
     password = Column(String)
     avatar_url = Column(String, nullable=True)
     bio = Column(String, nullable=True)
+    is_admin = Column(Boolean, default=False, nullable=False)
+    created_at = Column(DateTime(timezone=True), server_default=func.now())

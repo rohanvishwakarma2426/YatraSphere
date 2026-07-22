@@ -1,13 +1,16 @@
 import AppRoutes from "./routes/AppRoutes"
 import SidebarProvider from "./context/SidebarProvider"
 import AuthProvider from "./context/AuthProvider"
+import AdminAuthProvider from "./context/AdminAuthProvider"
 
 function App() {
   return (
     <AuthProvider>
-      <SidebarProvider>
-        <AppRoutes />
-      </SidebarProvider>
+      <AdminAuthProvider>
+        <SidebarProvider>
+          <AppRoutes />
+        </SidebarProvider>
+      </AdminAuthProvider>
     </AuthProvider>
   )
 }

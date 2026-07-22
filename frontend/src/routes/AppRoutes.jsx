@@ -1,4 +1,4 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom";
 
 import Home from "../pages/Home/Home";
 import Login from "../pages/Login/Login";
@@ -17,12 +17,15 @@ import Guides from "../pages/Guides/Guides";
 import Profile from "../pages/Profile/Profile";
 import RequireAuth from "./RequireAuth";
 import LocationDashboard from "../pages/Location/LocationDashboard";
+import AdminLayout from "../layouts/AdminLayout";
+import AdminLogin from "../pages/Admin/AdminLogin";
+import AdminDashboard from "../pages/Admin/AdminDashboard";
+import AdminComingSoon from "../pages/Admin/AdminComingSoon";
+import RequireAdminAuth from "./RequireAdminAuth";
 function AppRoutes() {
   return (
     <BrowserRouter>
       <Routes>
-        {/* HOME — protected, redirects to /login if not authenticated or guest */}
-
         <Route
           path="/"
           element={
@@ -32,63 +35,20 @@ function AppRoutes() {
           }
         />
 
-        {/* LOGIN */}
-
         <Route path="/login" element={<Login />} />
-
-        {/* SIGNUP */}
-
         <Route path="/signup" element={<Signup />} />
-
-        {/* COMMUNITY */}
-
         <Route path="/community" element={<Community />} />
-
-        {/* TRIPS */}
-
         <Route path="/trips" element={<Trips />} />
-
-        {/* ALERTS */}
-
         <Route path="/alerts" element={<Alerts />} />
-
-        {/* PACKAGES */}
-
         <Route path="/packages" element={<Packages />} />
-
-        {/* BUDGET CALCULATOR */}
-
         <Route path="/budget-calculator" element={<BudgetCalculator />} />
-
-        {/* OFFERS & DEALS */}
-
         <Route path="/offers" element={<OffersDeals />} />
-
-        {/* SHARE EXPERIENCE */}
-
         <Route path="/share-experience" element={<ShareExperience />} />
-
-        {/* BLOGS & GUIDES */}
-
         <Route path="/blogs-guides" element={<BlogsGuides />} />
-
-        {/* EXPLORE PLACES */}
-
         <Route path="/explore" element={<Explore />} />
-
-        {/* EXPERIENCES */}
-
         <Route path="/experiences" element={<Experiences />} />
-
-        {/* GUIDES */}
-
         <Route path="/guides" element={<Guides />} />
-
-        {/* LOCATION DASHBOARD */}
-
         <Route path="/location/:name" element={<LocationDashboard />} />
-
-        {/* PROFILE DASHBOARD — protected, own posts + profile edit */}
 
         <Route
           path="/profile"
@@ -98,6 +58,34 @@ function AppRoutes() {
             </RequireAuth>
           }
         />
+
+        {/* ================= ADMIN PANEL ================= */}
+
+        <Route path="/admin/login" element={<AdminLogin />} />
+
+        <Route
+          path="/admin"
+          element={
+            <RequireAdminAuth>
+              <AdminLayout />
+            </RequireAdminAuth>
+          }
+        >
+          <Route index element={<Navigate to="/admin/dashboard" replace />} />
+          <Route path="dashboard" element={<AdminDashboard />} />
+          <Route path="users" element={<AdminComingSoon title="Users" />} />
+          <Route path="destinations" element={<AdminComingSoon title="Destinations" />} />
+          <Route path="trips-packages" element={<AdminComingSoon title="Trips & Packages" />} />
+          <Route path="bookings" element={<AdminComingSoon title="Bookings" />} />
+          <Route path="blog-guides" element={<AdminComingSoon title="Blog & Guides" />} />
+          <Route path="community-posts" element={<AdminComingSoon title="Community Posts" />} />
+          <Route path="reviews-ratings" element={<AdminComingSoon title="Reviews & Ratings" />} />
+          <Route path="offers-deals" element={<AdminComingSoon title="Offers & Deals" />} />
+          <Route path="reports-analytics" element={<AdminComingSoon title="Reports & Analytics" />} />
+          <Route path="site-settings" element={<AdminComingSoon title="Site Settings" />} />
+          <Route path="notifications" element={<AdminComingSoon title="Notifications" />} />
+          <Route path="support-tickets" element={<AdminComingSoon title="Support Tickets" />} />
+        </Route>
       </Routes>
     </BrowserRouter>
   );
