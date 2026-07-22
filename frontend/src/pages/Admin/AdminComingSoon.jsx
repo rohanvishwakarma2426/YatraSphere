@@ -8,7 +8,7 @@ function AdminComingSoon({ title }) {
       </div>
       <h2 className="text-[16px] font-bold text-[#111827]">{title}</h2>
       <p className="text-[13px] text-[#6b7280] mt-1.5 max-w-[360px]">
-        This section is on the roadmap and hasn't been built yet — bata do agar isko banana hai.
+        This section is on the roadmap and hasn't been built yet
       </p>
     </div>
   )
